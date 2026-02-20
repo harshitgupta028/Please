@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Please Register for DU 😊</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(-45deg, #667eea, #764ba2, #6b73ff, #000dff);
+            background-size: 400% 400%;
+            animation: gradientBG 10s ease infinite;
+            text-align: center;
+            color: white;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+        }
+
+        #message {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            min-height: 30px;
+        }
+
+        button {
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        #yesBtn {
+            background: #28a745;
+            color: white;
+            box-shadow: 0 0 15px rgba(40, 167, 69, 0.6);
+        }
+
+        #yesBtn:hover {
+            transform: scale(1.1);
+        }
+
+        #noBtn {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Please register for DU 🙂</h1>
+        <div id="message"></div>
+        <button id="yesBtn" onclick="handleYes()">Yes</button>
+        <button id="noBtn" onclick="handleNo()">No</button>
+    </div>
+
+    <script>
+        let yesSize = 1.2; // initial font size
+        let noClicks = 0;
+
+        const messages = [
+            "Please? 🥺",
+            "I’ll do your task...",
+            "I'll do anything you ask 😭",
+            "Come on, don’t break my heart 💔",
+            "Just click Yes, it’s easy 😅",
+            "You know you want to 😉",
+            "Don’t say no again 😢",
+            "I promise it'll be worth it ✨",
+            "Last chance… maybe? 😬",
+            "Why are you like this 😂",
+            "Okay fine, I’ll give you chocolate 🍫",
+            "This is getting awkward now 😭"
+        ];
+
+        function handleNo() {
+            const messageBox = document.getElementById("message");
+            const yesBtn = document.getElementById("yesBtn");
+
+            if (noClicks < messages.length) {
+                messageBox.innerText = messages[noClicks];
+            } else {
+                messageBox.innerText = "Okay that's enough... Just press Yes now 😂";
+            }
+
+            noClicks++;
+
+            // Increase Yes button size gradually
+            yesSize += 0.3;
+            yesBtn.style.fontSize = yesSize + "rem";
+            yesBtn.style.padding = (14 + noClicks * 5) + "px " + (28 + noClicks * 8) + "px";
+        }
+
+        function handleYes() {
+            document.body.innerHTML = `
+    <h1 style="font-size:3rem;">🎉 Yayyy!! You Registered! 🎉</h1>
+    <p style="font-size:1.5rem; margin-top:20px;">I knew you would say Yes 😎</p>
+  `;
+        }
+    </script>
+
+</body>
+
+</html>

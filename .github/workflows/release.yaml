@@ -26,11 +26,123 @@ jobs:
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
+      - name: Determine prefix based on branch
+        id: prefix
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            PREFIX="R"
+          else
+            PREFIX="F"
+          fi
+          echo "value=$PREFIX" >> $GITHUB_OUTPUT
+
       - name: Get next increment number
         id: increment
         run: |
-          # Get all tags matching R*.* pattern and extract the number
-          LATEST_NUMBER=$(git tag -l 'R*.*' | sed 's/R\([0-9]*\)\..*/\1/' | sort -n | tail -1)
+          PREFIX="${{ steps.prefix.outputs.value }}"
+
+          echo "🔍 Looking for tags matching: ${PREFIX}*.*"
+          git tag -l "${PREFIX}*.*"
+
+          # Get all tags matching the prefix pattern and extract the number
+          LATEST_NUMBER=$(git tag -l "${PREFIX}*.*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
+
+          echo "Latest number found: $LATEST_NUMBER"
+
+          # If no tags exist, start at 1
+          if [ -z "$LATEST_NUMBER" ]; then
+            NEXT_NUMBER=1
+          else
+            NEXT_NUMBER=$((LATEST_NUMBER + 1))
+          fi
+
+          echo "Next number: $NEXT_NUMBER"
+          echo "number=$NEXT_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Generate tag name
+        id: tag
+        run: |
+          PREFIX="${{ steps.prefix.outputs.value }}"
+          TAG_NAME="${PREFIX}${{ steps.increment.outputs.number }}.${{ steps.branch.outputs.name }}"
+          echo "Generated tag: $TAG_NAME"
+          echo "name=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      - name: Check if tag already exists
+        id: tag_exists
+        run: |
+          TAG_NAME="${{ steps.tag.outputs.name }}"
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Tag $TAG_NAME already exists."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Display waiting for confirmation
+        if: steps.tag_exists.outputs.exists == 'false'
+        run: |
+          echo ""
+          echo "⏳ WAITING FOR CONFIRMATION ⏳"
+          echo ""
+          echo "Release Tag to be created: ${{ steps.tag.outputs.name }}"
+          echo "Branch: ${{ steps.branch.outputs.name }}"
+          echo ""
+
+      - name: Create Job Summary (Waiting)
+        if: steps.tag_exists.outputs.exists == 'false'
+        run: |
+          REPO="${{ github.repository }}"
+          BRANCH_NAME="${{ steps.branch.outputs.name }}"
+          TAG_NAME="${{ steps.tag.outputs.name }}"
+
+          CONFIRMATION_LINK="https://github.com/${REPO}/actions/workflows/release.yml?ref=${BRANCH_NAME}"
+
+          echo "# ⏳ Ready to Create Release" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release Tag:** \`${TAG_NAME}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${BRANCH_NAME}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Create Release Now" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[✅ CLICK HERE TO CREATE RELEASE](${CONFIRMATION_LINK})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Then click **Run workflow** to create the release." >> $GITHUB_STEP_SUMMARY
+
+  generate-release:
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get branch name
+        id: branch
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Determine prefix based on branch
+        id: prefix
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            PREFIX="R"
+          else
+            PREFIX="F"
+          fi
+          echo "value=$PREFIX" >> $GITHUB_OUTPUT
+
+      - name: Get next increment number
+        id: increment
+        run: |
+          PREFIX="${{ steps.prefix.outputs.value }}"
+
+          # Get all tags matching the prefix pattern and extract the number
+          LATEST_NUMBER=$(git tag -l "${PREFIX}*.*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
 
           # If no tags exist, start at 1
           if [ -z "$LATEST_NUMBER" ]; then
@@ -44,10 +156,22 @@ jobs:
       - name: Generate tag name
         id: tag
         run: |
-          TAG_NAME="R${{ steps.increment.outputs.number }}.${{ steps.branch.outputs.name }}"
+          PREFIX="${{ steps.prefix.outputs.value }}"
+          TAG_NAME="${PREFIX}${{ steps.increment.outputs.number }}.${{ steps.branch.outputs.name }}"
           echo "name=$TAG_NAME" >> $GITHUB_OUTPUT
 
+      - name: Check if tag already exists
+        id: tag_exists
+        run: |
+          TAG_NAME="${{ steps.tag.outputs.name }}"
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create Release
+        if: steps.tag_exists.outputs.exists == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,8 +182,24 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Display created tag
+      - name: Create Job Summary (Success)
+        if: steps.tag_exists.outputs.exists == 'false'
         run: |
-          echo "✅ Release created successfully!"
-          echo "Tag: ${{ steps.tag.outputs.name }}"
-          echo "Branch: ${{ steps.branch.outputs.name }}"
+          echo "# 🎉 Release Created Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release Tag:** \`${{ steps.tag.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ steps.branch.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📎 Quick Links" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- [📦 View Release](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.name }})" >> $GITHUB_STEP_SUMMARY
+
+      - name: Create Job Summary (Tag exists)
+        if: steps.tag_exists.outputs.exists == 'true'
+        run: |
+          echo "# ⚠️ Release Already Exists!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** \`${{ steps.tag.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "This tag has already been created. No duplicate release was generated." >> $GITHUB_STEP_SUMMARY

@@ -26,11 +26,24 @@ jobs:
           BRANCH_NAME="${GITHUB_REF#refs/heads/}"
           echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - name: Get next increment number
-        id: increment
+      - name: Determine prefix based on branch
+        id: prefix
         run: |
-          # Get all tags matching R*.* pattern and extract the number
-          LATEST_NUMBER=$(git tag -l 'R*.*' | sed 's/R\([0-9]*\)\..*/\1/' | sort -n | tail -1)
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            PREFIX="R"
+          else
+            PREFIX="F"
+          fi
+          echo "value=$PREFIX" >> $GITHUB_OUTPUT
+
+      - name: Get next increment number (Global counter)
+        id: global_increment
+        run: |
+          PREFIX="${{ steps.prefix.outputs.value }}"
+          
+          # Get all tags matching the prefix pattern and extract the number
+          LATEST_NUMBER=$(git tag -l "${PREFIX}*.*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
 
           # If no tags exist, start at 1
           if [ -z "$LATEST_NUMBER" ]; then
@@ -41,10 +54,34 @@ jobs:
 
           echo "number=$NEXT_NUMBER" >> $GITHUB_OUTPUT
 
+      - name: Get branch-specific increment number
+        id: branch_increment
+        run: |
+          PREFIX="${{ steps.prefix.outputs.value }}"
+          BRANCH_NAME="${{ steps.branch.outputs.name }}"
+          GLOBAL_NUMBER="${{ steps.global_increment.outputs.number }}"
+          
+          # Get all tags for this specific branch
+          BRANCH_TAGS=$(git tag -l "${PREFIX}${GLOBAL_NUMBER}.${BRANCH_NAME}*" | sed "s/${PREFIX}${GLOBAL_NUMBER}\.${BRANCH_NAME}-\([0-9]*\)/\1/" | sort -n | tail -1)
+          
+          # If no tags exist for this branch, start at 1
+          if [ -z "$BRANCH_TAGS" ]; then
+            BRANCH_NUMBER=1
+          else
+            BRANCH_NUMBER=$((BRANCH_TAGS + 1))
+          fi
+
+          echo "number=$BRANCH_NUMBER" >> $GITHUB_OUTPUT
+
       - name: Generate tag name
         id: tag
         run: |
-          TAG_NAME="R${{ steps.increment.outputs.number }}.${{ steps.branch.outputs.name }}"
+          PREFIX="${{ steps.prefix.outputs.value }}"
+          GLOBAL_NUM="${{ steps.global_increment.outputs.number }}"
+          BRANCH_NUM="${{ steps.branch_increment.outputs.number }}"
+          BRANCH_NAME="${{ steps.branch.outputs.name }}"
+          
+          TAG_NAME="${PREFIX}${GLOBAL_NUM}.${BRANCH_NAME}-${BRANCH_NUM}"
           echo "name=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Create Release

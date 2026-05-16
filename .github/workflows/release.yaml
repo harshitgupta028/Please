@@ -29,8 +29,8 @@ jobs:
       - name: Get next increment number
         id: increment
         run: |
-          # Get all tags matching R1.* pattern and extract the number
-          LATEST_NUMBER=$(git tag -l 'R1.*' | sed 's/R1\.\([0-9]*\).*/\1/' | sort -n | tail -1)
+          # Get all tags matching R*.* pattern and extract the number
+          LATEST_NUMBER=$(git tag -l 'R*.*' | sed 's/R\([0-9]*\)\..*/\1/' | sort -n | tail -1)
 
           # If no tags exist, start at 1
           if [ -z "$LATEST_NUMBER" ]; then

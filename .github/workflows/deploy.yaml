@@ -1,8 +1,17 @@
 name: Deploy Release
 
 on:
+  # Automatic trigger when a release is published
   release:
-    types: [created, published]
+    types: [published]
+
+  # Manual trigger from Actions tab
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Release tag to deploy (leave empty for latest)"
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -20,10 +29,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ github.event.inputs.tag_name || github.ref }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -37,9 +46,8 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
 
-      - name: Log deployment info
+      - name: Deployment Info
         run: |
-          echo "✅ Deployment completed!"
-          echo "Release Tag: ${{ github.event.release.tag_name }}"
-          echo "Release Name: ${{ github.event.release.name }}"
+          echo "✅ Deployment completed successfully!"
           echo "Pages URL: ${{ steps.deployment.outputs.page_url }}"
+          echo "Deployed from: ${{ github.ref }}"

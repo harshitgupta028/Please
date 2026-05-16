@@ -1,11 +1,11 @@
 name: Create Release
 
 on:
-  # Automatic trigger on push to main
+  # Automatic trigger on push to branches
   push:
-    branches: ["main"]
+    branches: ["main", "feature/*"]
 
-  # Manual trigger from Actions tab (for feature branches)
+  # Manual trigger from Actions tab
   workflow_dispatch:
 
 permissions:
@@ -37,73 +37,34 @@ jobs:
           fi
           echo "value=$PREFIX" >> $GITHUB_OUTPUT
 
-      - name: Get global increment number for this specific branch
-        id: global_increment
+      - name: Get next increment number
+        id: increment
         run: |
           PREFIX="${{ steps.prefix.outputs.value }}"
-          BRANCH_NAME="${{ steps.branch.outputs.name }}"
 
-          echo "🔍 Looking for tags matching: ${PREFIX}*.${BRANCH_NAME}-*"
-          git tag -l "${PREFIX}*.${BRANCH_NAME}-*"
+          echo "🔍 Looking for tags matching: ${PREFIX}*.*"
+          git tag -l "${PREFIX}*.*"
 
-          # Get all tags for THIS SPECIFIC BRANCH and extract the global number
-          BRANCH_GLOBAL=$(git tag -l "${PREFIX}*.${BRANCH_NAME}-*" | head -1 | sed "s/${PREFIX}\([0-9]*\)\..*/\1/")
+          # Get all tags matching the prefix pattern and extract the number
+          LATEST_NUMBER=$(git tag -l "${PREFIX}*.*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
 
-          echo "Branch global number found: $BRANCH_GLOBAL"
+          echo "Latest number found: $LATEST_NUMBER"
 
-          # If this branch has no tags, get the highest global number across all branches and increment
-          if [ -z "$BRANCH_GLOBAL" ]; then
-            echo "No tags found for this branch, checking all branches..."
-            LATEST_NUMBER=$(git tag -l "${PREFIX}*.*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
-            echo "Latest global number across all branches: $LATEST_NUMBER"
-            if [ -z "$LATEST_NUMBER" ]; then
-              NEXT_NUMBER=1
-            else
-              NEXT_NUMBER=$((LATEST_NUMBER + 1))
-            fi
-            echo "number=$NEXT_NUMBER" >> $GITHUB_OUTPUT
+          # If no tags exist, start at 1
+          if [ -z "$LATEST_NUMBER" ]; then
+            NEXT_NUMBER=1
           else
-            # Use the existing global number for this branch
-            echo "number=$BRANCH_GLOBAL" >> $GITHUB_OUTPUT
+            NEXT_NUMBER=$((LATEST_NUMBER + 1))
           fi
 
-      - name: Get branch-specific increment number
-        id: branch_increment
-        run: |
-          PREFIX="${{ steps.prefix.outputs.value }}"
-          BRANCH_NAME="${{ steps.branch.outputs.name }}"
-          GLOBAL_NUMBER="${{ steps.global_increment.outputs.number }}"
-
-          echo "🔍 Looking for tags: ${PREFIX}${GLOBAL_NUMBER}.${BRANCH_NAME}-*"
-          git tag -l "${PREFIX}${GLOBAL_NUMBER}.${BRANCH_NAME}-*"
-
-          # Get all tags for this specific branch with this global number
-          BRANCH_TAGS=$(git tag -l "${PREFIX}${GLOBAL_NUMBER}.${BRANCH_NAME}-*")
-
-          echo "Found tags: $BRANCH_TAGS"
-
-          if [ -z "$BRANCH_TAGS" ]; then
-            BRANCH_NUMBER=1
-            echo "No tags found for this branch, starting at 1"
-          else
-            # Extract the highest number
-            LATEST=$(echo "$BRANCH_TAGS" | sed "s/${PREFIX}${GLOBAL_NUMBER}\.${BRANCH_NAME}-\([0-9]*\)/\1/" | sort -n | tail -1)
-            echo "Latest branch number: $LATEST"
-            BRANCH_NUMBER=$((LATEST + 1))
-            echo "Next branch number: $BRANCH_NUMBER"
-          fi
-
-          echo "number=$BRANCH_NUMBER" >> $GITHUB_OUTPUT
+          echo "Next number: $NEXT_NUMBER"
+          echo "number=$NEXT_NUMBER" >> $GITHUB_OUTPUT
 
       - name: Generate tag name
         id: tag
         run: |
           PREFIX="${{ steps.prefix.outputs.value }}"
-          GLOBAL_NUM="${{ steps.global_increment.outputs.number }}"
-          BRANCH_NUM="${{ steps.branch_increment.outputs.number }}"
-          BRANCH_NAME="${{ steps.branch.outputs.name }}"
-
-          TAG_NAME="${PREFIX}${GLOBAL_NUM}.${BRANCH_NAME}-${BRANCH_NUM}"
+          TAG_NAME="${PREFIX}${{ steps.increment.outputs.number }}.${{ steps.branch.outputs.name }}"
           echo "Generated tag: $TAG_NAME"
           echo "name=$TAG_NAME" >> $GITHUB_OUTPUT
 
@@ -113,7 +74,7 @@ jobs:
           TAG_NAME="${{ steps.tag.outputs.name }}"
           if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "⚠️ Tag $TAG_NAME already exists. Skipping release creation."
+            echo "⚠️ Tag $TAG_NAME already exists."
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
@@ -165,7 +126,7 @@ jobs:
           echo "Tag ${{ steps.tag.outputs.name }} already exists."
           echo "No duplicate release created."
 
-      - name: Create Job Summary
+      - name: Create Job Summary (Success)
         if: steps.tag_exists.outputs.exists == 'false'
         run: |
           echo "# 🎉 Release Created Successfully!" >> $GITHUB_STEP_SUMMARY

@@ -2,12 +2,894 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Priya's Birthday Party Planner 🎉</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg,
+                    #ff9a9e 0%,
+                    #fad0c4 35%,
+                    #fbc2eb 70%,
+                    #a18cd1 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1150px;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(255, 118, 156, 0.35);
+            padding: 50px;
+            text-align: center;
+            animation: slideIn 0.6s ease-out, floaty 5s ease-in-out infinite;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes floaty {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .stage {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .stage.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* =========================
+           HERO
+        ========================== */
+
+        .stage1 h1 {
+            font-size: 2.8em;
+            color: #ff4f81;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .stage1 .emoji {
+            font-size: 4em;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.7));
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-18px);
+            }
+        }
+
+        .stage1 p {
+            font-size: 1.15em;
+            color: #666;
+            margin: 20px 0;
+            line-height: 1.7;
+        }
+
+        /* =========================
+           BUTTONS
+        ========================== */
+
+        .cta-button {
+            background: linear-gradient(135deg,
+                    #ff758c 0%,
+                    #ff7eb3 40%,
+                    #a18cd1 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.05em;
+            border-radius: 999px;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            box-shadow: 0 8px 25px rgba(255, 118, 156, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(255, 118, 156, 0.45);
+        }
+
+        /* =========================
+           HEADINGS
+        ========================== */
+
+        .stage2 h2,
+        .stage3 h2,
+        .stage3half h2,
+        .stage4 h2 {
+            font-size: 2.3em;
+            color: #ff4f81;
+            margin-bottom: 25px;
+            font-weight: 800;
+        }
+
+        /* =========================
+           DATE CARDS
+        ========================== */
+
+        .dates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 18px;
+            margin: 30px 0;
+            max-height: 420px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #fff5fa;
+            border-radius: 20px;
+        }
+
+        .date-card {
+            background: white;
+            border: 2px solid #ffd6e7;
+            padding: 18px;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .date-card:hover {
+            border-color: #ff7eb3;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(255, 118, 156, 0.2);
+        }
+
+        .date-card.selected {
+            background: linear-gradient(135deg,
+                    #ff758c 0%,
+                    #ff7eb3 40%,
+                    #a18cd1 100%);
+            color: white;
+            border-color: #ff4f81;
+        }
+
+        .date-card .day {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .date-card .date {
+            font-size: 1.6em;
+            font-weight: 800;
+        }
+
+        .date-card .month {
+            font-size: 0.85em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        /* =========================
+           CAFE CARDS
+        ========================== */
+
+        .cafes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            margin: 60px 0 30px;
+        }
+
+        .cafe-card {
+            position: relative;
+            background: linear-gradient(135deg,
+                    #fff4f8 0%,
+                    #ffeef8 45%,
+                    #f6ecff 100%);
+            border-radius: 30px;
+            padding: 30px;
+            text-align: left;
+            box-shadow:
+                0 12px 35px rgba(255, 118, 156, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            transition: all 0.35s ease;
+            cursor: pointer;
+            border: 2px solid #ffd9ea;
+        }
+
+        .cafe-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow:
+                0 20px 45px rgba(255, 118, 156, 0.28),
+                0 0 0 6px rgba(255, 255, 255, 0.5);
+        }
+
+        .cafe-card.selected {
+            border-color: #ff6b9c;
+            box-shadow:
+                0 20px 50px rgba(255, 118, 156, 0.35),
+                0 0 0 6px rgba(255, 235, 245, 0.9);
+            transform: translateY(-8px);
+        }
+
+        .cafe-icon {
+            width: 90px;
+            height: 90px;
+            margin: -75px auto 20px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.6em;
+            box-shadow: 0 10px 25px rgba(255, 118, 156, 0.2);
+            border: 5px solid #fff5fa;
+        }
+
+        .cafe-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .cafe-name {
+            font-size: 1.55em;
+            font-weight: 800;
+            color: #ff4f81;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .cafe-rating {
+            width: fit-content;
+            margin: 0 auto;
+            background: linear-gradient(135deg,
+                    #ff7aa2 0%,
+                    #ff92b7 100%);
+            color: white;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 1em;
+            font-weight: 700;
+            box-shadow: 0 6px 18px rgba(255, 118, 156, 0.25);
+        }
+
+        .cafe-body {
+            margin-top: 25px;
+        }
+
+        .cafe-detail {
+            padding: 14px 0;
+            border-bottom: 1px dashed #ffd3e4;
+        }
+
+        .cafe-detail:last-child {
+            border-bottom: none;
+        }
+
+        .cafe-detail strong {
+            color: #ff4f81;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 1em;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .cafe-detail span {
+            color: #555;
+            font-size: 1.02em;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           DESSERT CARDS
+        ========================== */
+
+        .dessert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            margin: 60px 0 30px;
+        }
+
+        .dessert-card {
+            position: relative;
+            background: linear-gradient(135deg,
+                    #fff4f8 0%,
+                    #ffeef8 45%,
+                    #f6ecff 100%);
+            border-radius: 30px;
+            padding: 30px;
+            text-align: center;
+            box-shadow:
+                0 12px 35px rgba(255, 118, 156, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            transition: all 0.35s ease;
+            cursor: pointer;
+            border: 2px solid #ffd9ea;
+        }
+
+        .dessert-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow:
+                0 20px 45px rgba(255, 118, 156, 0.28),
+                0 0 0 6px rgba(255, 255, 255, 0.5);
+        }
+
+        .dessert-card.selected {
+            border-color: #ff6b9c;
+            box-shadow:
+                0 20px 50px rgba(255, 118, 156, 0.35),
+                0 0 0 6px rgba(255, 235, 245, 0.9);
+            transform: translateY(-8px);
+        }
+
+        .dessert-emoji {
+            width: 90px;
+            height: 90px;
+            margin: -75px auto 22px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8em;
+            box-shadow: 0 10px 25px rgba(255, 118, 156, 0.2);
+            border: 5px solid #fff5fa;
+        }
+
+        .dessert-name {
+            font-size: 1.55em;
+            font-weight: 800;
+            color: #ff4f81;
+            margin-bottom: 18px;
+            line-height: 1.3;
+        }
+
+        .dessert-specialty {
+            color: #555;
+            font-size: 1.02em;
+            line-height: 1.8;
+            padding-top: 16px;
+            border-top: 1px dashed #ffd3e4;
+        }
+
+        /* =========================
+           FINALE
+        ========================== */
+
+        .stage4 .emoji-large {
+            font-size: 4em;
+            margin: 20px 0;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .stage4 p {
+            font-size: 1.2em;
+            color: #666;
+            line-height: 1.8;
+            margin: 15px 0;
+        }
+
+        .flirty-line {
+            font-size: 1.4em;
+            color: #ff4f81;
+            font-weight: 700;
+            margin: 30px 0;
+            animation: shimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 768px) {
+
+            .container {
+                padding: 30px;
+            }
+
+            .stage1 h1 {
+                font-size: 2em;
+            }
+
+            .cafes-grid,
+            .dessert-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stage4 h2 {
+                font-size: 1.7em;
+            }
+
+            .cafe-card,
+            .dessert-card {
+                padding: 24px;
+            }
+        }
+    </style>
 </head>
 
 <body>
+
+    <div class="container">
+
+        <!-- STAGE 1 -->
+        <div class="stage stage1 active">
+
+            <div class="emoji">🎂</div>
+
+            <h1>Priya, your birthday party is pending!</h1>
+
+            <p>
+                And you're too busy to plan... but don't you worry! 💕
+            </p>
+
+            <p style="font-size:1.05em; color:#ff4f81; font-weight:600;">
+                Let's make this special as you are ✨
+            </p>
+
+            <button class="cta-button" onclick="nextStage()">
+                Let's Plan! 🎉
+            </button>
+
+        </div>
+
+        <!-- STAGE 2 -->
+        <div class="stage stage2">
+
+            <h2>📅 Pick Your Birthday Weekend</h2>
+
+            <p style="color:#666; margin-bottom:20px;">
+                Choose your perfect celebration date ✨
+            </p>
+
+            <div class="dates-grid" id="datesGrid"></div>
+
+            <button class="cta-button" onclick="nextStage()">
+                Choose Venue 💫
+            </button>
+
+        </div>
+
+        <!-- STAGE 3 -->
+        <div class="stage stage3">
+
+            <h2>🍽️ Choose Your Birthday Cafe ✨</h2>
+
+            <p style="color:#666; margin-bottom:20px;">
+                Beautiful cafes with amazing vibes & food 💕
+            </p>
+
+            <div class="cafes-grid" id="cafesGrid"></div>
+
+            <button class="cta-button" onclick="nextStage()">
+                Pick Dessert 🍰
+            </button>
+
+        </div>
+
+        <!-- STAGE 3.5 -->
+        <div class="stage stage3half">
+
+            <h2>🍰 Dessert Time</h2>
+
+            <p style="color:#666; margin-bottom:20px;">
+                Because birthdays deserve the sweetest ending ✨
+            </p>
+
+            <div class="dessert-grid" id="dessertGrid"></div>
+
+            <button class="cta-button" onclick="nextStage()">
+                Complete ✨
+            </button>
+
+        </div>
+
+        <!-- STAGE 4 -->
+        <div class="stage stage4">
+
+            <div class="emoji-large">🎊</div>
+
+            <h2>Your Birthday Party is Planned! ✨</h2>
+
+            <p>
+                You've got the date, the venue, and the desserts 💕
+            </p>
+
+            <p class="flirty-line">
+                “Life is a party, dress like it!” 🎉
+            </p>
+
+            <p style="color:#999; margin-top:30px;">
+                Now go celebrate and make unforgettable memories ✨
+            </p>
+
+            <div class="button-group">
+                <button class="cta-button" onclick="shareJourney()">
+                    Share the Joy 💌
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+
+        let currentStage = 0;
+        let selectedDate = null;
+        let selectedCafe = null;
+        let selectedDessert = null;
+
+        // Cafe Data
+        const cafes = [
+            {
+                name: "Urban Nemo Cafe & Garden",
+                rating: "4.7⭐",
+                famousDish: "Mexican Veg Quesadilla, Loaded Nachos",
+                bestPasta: "Pink Sauce Pasta",
+                dessert: "Cheesecake"
+            },
+            {
+                name: "Lillie's - The Boho Cafe",
+                rating: "4.8⭐",
+                famousDish: "Buddha Bowl, Spanish Latte",
+                bestPasta: "Alfredo Pasta",
+                dessert: "Tiramisu"
+            },
+            {
+                name: "Olive Bistro & Bar",
+                rating: "4.9⭐",
+                famousDish: "Falafel with Pita, Ravioli",
+                bestPasta: "Creamy Ravioli",
+                dessert: "Panna Cotta"
+            },
+            {
+                name: "Sky Salt Cafe & Bistro",
+                rating: "4.8⭐",
+                famousDish: "Italian Mains & Rooftop Platters",
+                bestPasta: "Creamy Alfredo Pasta",
+                dessert: "Cheesecake"
+            }
+        ];
+
+        // Dessert Data
+        const desserts = [
+            {
+                name: "Et-Si",
+                specialty: "Chocolate Croissant & Pastries",
+                emoji: "🥐"
+            },
+            {
+                name: "Magnolia Bakery",
+                specialty: "Banana Pudding & Cheesecake",
+                emoji: "🍌"
+            }
+        ];
+
+        // Generate Dates
+        function generateWeekendDates() {
+
+            const datesGrid = document.getElementById('datesGrid');
+
+            datesGrid.innerHTML = '';
+
+            const today = new Date();
+
+            for (let i = 0, count = 0; i < 120 && count < 12; i++) {
+
+                const date = new Date(today);
+
+                date.setDate(today.getDate() + i);
+
+                const day = date.getDay();
+
+                if (day === 6 || day === 0) {
+
+                    count++;
+
+                    const card = document.createElement('div');
+
+                    card.className = 'date-card';
+
+                    card.innerHTML = `
+                        <div class="day">
+                            ${date.toLocaleDateString('en-US', { weekday: 'short' })}
+                        </div>
+
+                        <div class="date">
+                            ${date.getDate()}
+                        </div>
+
+                        <div class="month">
+                            ${date.toLocaleDateString('en-US', { month: 'short' })}
+                        </div>
+                    `;
+
+                    card.onclick = () => selectDate(card, date);
+
+                    datesGrid.appendChild(card);
+                }
+            }
+        }
+
+        function selectDate(element, date) {
+
+            document.querySelectorAll('.date-card')
+                .forEach(card => card.classList.remove('selected'));
+
+            element.classList.add('selected');
+
+            selectedDate = date.toLocaleDateString();
+        }
+
+        // Generate Cafes
+        function generateCafes() {
+
+            const cafesGrid = document.getElementById('cafesGrid');
+
+            cafesGrid.innerHTML = '';
+
+            const cafeIcons = ['🏡', '🌸', '✨', '🌃'];
+
+            cafes.forEach((cafe, index) => {
+
+                const card = document.createElement('div');
+
+                card.className = 'cafe-card';
+
+                card.innerHTML = `
+
+                    <div class="cafe-icon">
+                        ${cafeIcons[index]}
+                    </div>
+
+                    <div class="cafe-header">
+
+                        <div class="cafe-name">
+                            ${cafe.name}
+                        </div>
+
+                        <div class="cafe-rating">
+                            ${cafe.rating}
+                        </div>
+
+                    </div>
+
+                    <div class="cafe-body">
+
+                        <div class="cafe-detail">
+                            <strong>🌟 Famous Dish</strong>
+                            <span>${cafe.famousDish}</span>
+                        </div>
+
+                        <div class="cafe-detail">
+                            <strong>🍝 Best Pasta</strong>
+                            <span>${cafe.bestPasta}</span>
+                        </div>
+
+                        <div class="cafe-detail">
+                            <strong>🍰 Signature Dessert</strong>
+                            <span>${cafe.dessert}</span>
+                        </div>
+
+                    </div>
+                `;
+
+                card.onclick = () => selectCafe(card, cafe.name);
+
+                cafesGrid.appendChild(card);
+            });
+        }
+
+        function selectCafe(element, cafeName) {
+
+            document.querySelectorAll('.cafe-card')
+                .forEach(card => card.classList.remove('selected'));
+
+            element.classList.add('selected');
+
+            selectedCafe = cafeName;
+        }
+
+        // Generate Desserts
+        function generateDesserts() {
+
+            const dessertGrid = document.getElementById('dessertGrid');
+
+            dessertGrid.innerHTML = '';
+
+            desserts.forEach(dessert => {
+
+                const card = document.createElement('div');
+
+                card.className = 'dessert-card';
+
+                card.innerHTML = `
+
+                    <div class="dessert-emoji">
+                        ${dessert.emoji}
+                    </div>
+
+                    <div class="dessert-name">
+                        ${dessert.name}
+                    </div>
+
+                    <div class="dessert-specialty">
+                        ${dessert.specialty}
+                    </div>
+
+                `;
+
+                card.onclick = () => selectDessert(card, dessert.name);
+
+                dessertGrid.appendChild(card);
+            });
+        }
+
+        function selectDessert(element, dessertName) {
+
+            document.querySelectorAll('.dessert-card')
+                .forEach(card => card.classList.remove('selected'));
+
+            element.classList.add('selected');
+
+            selectedDessert = dessertName;
+        }
+
+        // Navigation
+        function nextStage() {
+
+            const stages = document.querySelectorAll('.stage');
+
+            stages.forEach(stage => stage.classList.remove('active'));
+
+            currentStage++;
+
+            if (currentStage === 1) {
+
+                generateWeekendDates();
+
+            } else if (currentStage === 2) {
+
+                if (!selectedDate) {
+
+                    alert('Please select a date 📅');
+
+                    currentStage--;
+
+                    return;
+                }
+
+                generateCafes();
+
+            } else if (currentStage === 3) {
+
+                if (!selectedCafe) {
+
+                    alert('Please select a cafe 🍽️');
+
+                    currentStage--;
+
+                    return;
+                }
+
+                generateDesserts();
+
+            } else if (currentStage === 4) {
+
+                if (!selectedDessert) {
+
+                    alert('Please select a dessert place 🍰');
+
+                    currentStage--;
+
+                    return;
+                }
+            }
+
+            stages[currentStage].classList.add('active');
+        }
+
+        // WhatsApp Share
+        function shareJourney() {
+
+            const message = `🎉 Priya's Birthday Party is Planned! ✨
+
+📅 Date: ${selectedDate}
+🍽️ Cafe: ${selectedCafe}
+🍰 Dessert: ${selectedDessert}
+
+"Life is a party, dress like it!" 🎊💕`;
+
+            const whatsappURL =
+                `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+            window.open(whatsappURL, '_blank');
+        }
+
+    </script>
 
 </body>
 

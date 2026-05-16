@@ -44,7 +44,7 @@ jobs:
       - name: Generate tag name
         id: tag
         run: |
-          TAG_NAME="R1.${{ steps.increment.outputs.number }}-${{ steps.branch.outputs.name }}"
+          TAG_NAME="R${{ steps.increment.outputs.number }}.-${{ steps.branch.outputs.name }}"
           echo "name=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Create Release

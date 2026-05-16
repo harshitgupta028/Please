@@ -8,8 +8,8 @@ on:
   # Manual trigger from Actions tab
   workflow_dispatch:
     inputs:
-      confirm_release:
-        description: "Confirm release creation"
+      create_release:
+        description: "Create the release"
         required: false
         type: boolean
         default: false
@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   create-release:
+    name: create-release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -85,23 +86,64 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Generate confirmation link
-        id: confirmation
-        if: steps.tag_exists.outputs.exists == 'false'
+  generate-release:
+    name: generate-release
+    needs: create-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get branch name
+        id: branch
         run: |
-          REPO="${{ github.repository }}"
-          RUN_ID="${{ github.run_id }}"
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Determine prefix based on branch
+        id: prefix
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            PREFIX="R"
+          else
+            PREFIX="F"
+          fi
+          echo "value=$PREFIX" >> $GITHUB_OUTPUT
+
+      - name: Get next increment number
+        id: increment
+        run: |
+          PREFIX="${{ steps.prefix.outputs.value }}"
+          LATEST_NUMBER=$(git tag -l "${PREFIX}*.*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
+          if [ -z "$LATEST_NUMBER" ]; then
+            NEXT_NUMBER=1
+          else
+            NEXT_NUMBER=$((LATEST_NUMBER + 1))
+          fi
+          echo "number=$NEXT_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Generate tag name
+        id: tag
+        run: |
+          PREFIX="${{ steps.prefix.outputs.value }}"
+          TAG_NAME="${PREFIX}${{ steps.increment.outputs.number }}.${{ steps.branch.outputs.name }}"
+          echo "name=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      - name: Check if tag already exists
+        id: tag_exists
+        run: |
           TAG_NAME="${{ steps.tag.outputs.name }}"
-          BRANCH_NAME="${{ steps.branch.outputs.name }}"
-
-          # Create a URL with parameters to re-run the workflow with confirmation
-          CONFIRMATION_LINK="https://github.com/${REPO}/actions/workflows/release.yml?branch=${BRANCH_NAME}"
-
-          echo "link=$CONFIRMATION_LINK" >> $GITHUB_OUTPUT
-          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Display waiting for confirmation
-        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.confirm_release != 'true'
+        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.create_release != 'true'
         run: |
           echo ""
           echo "⏳ WAITING FOR CONFIRMATION ⏳"
@@ -109,32 +151,26 @@ jobs:
           echo "Release Tag to be created: ${{ steps.tag.outputs.name }}"
           echo "Branch: ${{ steps.branch.outputs.name }}"
           echo ""
-          echo "🔗 Click the link in the Job Summary below to confirm"
-          echo ""
 
       - name: Create Job Summary (Waiting)
-        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.confirm_release != 'true'
+        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.create_release != 'true'
         run: |
           REPO="${{ github.repository }}"
-          RUN_ID="${{ github.run_id }}"
+          BRANCH="${{ steps.branch.outputs.name }}"
           TAG_NAME="${{ steps.tag.outputs.name }}"
-
-          CONFIRMATION_LINK="https://github.com/${REPO}/actions/workflows/release.yml"
 
           echo "# ⏳ Waiting for Confirmation" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Release Tag:** \`${TAG_NAME}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Branch:** ${{ steps.branch.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${BRANCH}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🔗 Confirm Release Creation" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Click to Create Release" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "[✅ Click here to confirm and create release]($CONFIRMATION_LINK)" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Then click **Run workflow** and the release will be created." >> $GITHUB_STEP_SUMMARY
+          echo "[✅ Click here to create release](https://github.com/${REPO}/actions/workflows/release.yml?event=workflow_dispatch)" >> $GITHUB_STEP_SUMMARY
 
       - name: Create Release (After confirmation)
-        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.confirm_release == 'true'
+        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.create_release == 'true'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -146,7 +182,7 @@ jobs:
           prerelease: false
 
       - name: Create Job Summary (Success)
-        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.confirm_release == 'true'
+        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.create_release == 'true'
         run: |
           echo "# 🎉 Release Created Successfully!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -165,4 +201,4 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Tag:** \`${{ steps.tag.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "This tag has already been created. No duplicate release was generated." >> $GITHUB_STEP_SUMMARY
+          echo "This tag has already been created." >> $GITHUB_STEP_SUMMARY

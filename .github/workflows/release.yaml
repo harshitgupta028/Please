@@ -1,16 +1,8 @@
-name: Create Release Tag
+name: Auto Create Release Tag
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_title:
-        description: "Release title/name"
-        required: true
-        type: string
-      release_description:
-        description: "Release description/notes"
-        required: false
-        type: string
+  push:
+    branches: ["main", "develop", "feature/*"]
 
 permissions:
   contents: write
@@ -50,6 +42,14 @@ jobs:
         run: |
           TAG_NAME="R1.${{ steps.increment.outputs.number }}-${{ steps.branch.outputs.name }}"
           echo "name=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "Release Tag: $TAG_NAME"
+
+      - name: Create Release Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.tag.outputs.name }}" -m "Release ${{ steps.tag.outputs.name }}"
+          git push origin "${{ steps.tag.outputs.name }}"
 
       - name: Create Release
         uses: actions/create-release@v1
@@ -57,14 +57,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag.outputs.name }}
-          release_name: ${{ github.event.inputs.release_title }}
-          body: ${{ github.event.inputs.release_description }}
+          release_name: ${{ steps.tag.outputs.name }}
+          body: "Automated release from ${{ steps.branch.outputs.name }} branch"
           draft: false
           prerelease: false
 
-      - name: Display created tag
+      - name: Display created release
         run: |
           echo "✅ Release created successfully!"
           echo "Tag: ${{ steps.tag.outputs.name }}"
-          echo "Title: ${{ github.event.inputs.release_title }}"
-          echo "Description: ${{ github.event.inputs.release_description }}"
+          echo "Branch: ${{ steps.branch.outputs.name }}"

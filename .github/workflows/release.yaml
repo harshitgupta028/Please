@@ -79,7 +79,56 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Create Release
+      - name: Display confirmation link (Waiting for user action)
+        if: steps.tag_exists.outputs.exists == 'false'
+        run: |
+          REPO="${{ github.repository }}"
+          RUN_ID="${{ github.run_id }}"
+          TAG_NAME="${{ steps.tag.outputs.name }}"
+
+          CONFIRMATION_LINK="https://github.com/${REPO}/actions/runs/${RUN_ID}"
+
+          echo ""
+          echo "⏳ WAITING FOR CONFIRMATION ⏳"
+          echo ""
+          echo "Release Tag to be created: $TAG_NAME"
+          echo "Branch: ${{ steps.branch.outputs.name }}"
+          echo ""
+          echo "🔗 Click the link below to confirm and create the release:"
+          echo "$CONFIRMATION_LINK"
+          echo ""
+
+      - name: Create Job Summary (Waiting for confirmation)
+        if: steps.tag_exists.outputs.exists == 'false'
+        run: |
+          REPO="${{ github.repository }}"
+          RUN_ID="${{ github.run_id }}"
+          TAG_NAME="${{ steps.tag.outputs.name }}"
+
+          CONFIRMATION_LINK="https://github.com/${REPO}/actions/runs/${RUN_ID}"
+
+          echo "# ⏳ Waiting for Confirmation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Release Tag:** \`$TAG_NAME\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ steps.branch.outputs.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔗 Confirm Release Creation" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[✅ Click here to confirm and create release]($CONFIRMATION_LINK)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "After clicking the link above, re-run the workflow to create the tag." >> $GITHUB_STEP_SUMMARY
+
+      - name: Wait for manual approval
+        if: steps.tag_exists.outputs.exists == 'false'
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: ${{ github.actor }}
+          issue-title: "Approve Release: ${{ steps.tag.outputs.name }}"
+          issue-body: "Please approve the creation of release tag: ${{ steps.tag.outputs.name }} on branch ${{ steps.branch.outputs.name }}"
+
+      - name: Create Release (After approval)
         if: steps.tag_exists.outputs.exists == 'false'
         uses: actions/create-release@v1
         env:
@@ -91,21 +140,18 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Generate clickable link
+      - name: Generate clickable link (Success)
         id: link
         if: steps.tag_exists.outputs.exists == 'false'
         run: |
           REPO="${{ github.repository }}"
-          RUN_ID="${{ github.run_id }}"
           TAG_NAME="${{ steps.tag.outputs.name }}"
 
-          ACTIONS_LINK="https://github.com/${REPO}/actions/runs/${RUN_ID}"
           RELEASE_LINK="https://github.com/${REPO}/releases/tag/${TAG_NAME}"
 
-          echo "actions_link=$ACTIONS_LINK" >> $GITHUB_OUTPUT
           echo "release_link=$RELEASE_LINK" >> $GITHUB_OUTPUT
 
-      - name: Display created tag with links
+      - name: Display created tag with links (Success)
         if: steps.tag_exists.outputs.exists == 'false'
         run: |
           echo "✅ Release created successfully!"
@@ -115,16 +161,6 @@ jobs:
           echo ""
           echo "🔗 View Release:"
           echo "${{ steps.link.outputs.release_link }}"
-          echo ""
-          echo "🔗 View Workflow Run:"
-          echo "${{ steps.link.outputs.actions_link }}"
-
-      - name: Tag already exists message
-        if: steps.tag_exists.outputs.exists == 'true'
-        run: |
-          echo "⚠️ Release creation skipped!"
-          echo "Tag ${{ steps.tag.outputs.name }} already exists."
-          echo "No duplicate release created."
 
       - name: Create Job Summary (Success)
         if: steps.tag_exists.outputs.exists == 'false'
@@ -138,7 +174,13 @@ jobs:
           echo "### 📎 Quick Links" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- [📦 View Release](${{ steps.link.outputs.release_link }})" >> $GITHUB_STEP_SUMMARY
-          echo "- [▶️ View Workflow Run](${{ steps.link.outputs.actions_link }})" >> $GITHUB_STEP_SUMMARY
+
+      - name: Tag already exists message
+        if: steps.tag_exists.outputs.exists == 'true'
+        run: |
+          echo "⚠️ Release creation skipped!"
+          echo "Tag ${{ steps.tag.outputs.name }} already exists."
+          echo "No duplicate release created."
 
       - name: Create Job Summary (Tag exists)
         if: steps.tag_exists.outputs.exists == 'true'

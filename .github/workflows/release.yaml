@@ -43,12 +43,19 @@ jobs:
           PREFIX="${{ steps.prefix.outputs.value }}"
           BRANCH_NAME="${{ steps.branch.outputs.name }}"
 
+          echo "🔍 Looking for tags matching: ${PREFIX}*.${BRANCH_NAME}-*"
+          git tag -l "${PREFIX}*.${BRANCH_NAME}-*"
+
           # Get all tags for THIS SPECIFIC BRANCH and extract the global number
-          BRANCH_GLOBAL=$(git tag -l "${PREFIX}*.${BRANCH_NAME}-*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
+          BRANCH_GLOBAL=$(git tag -l "${PREFIX}*.${BRANCH_NAME}-*" | head -1 | sed "s/${PREFIX}\([0-9]*\)\..*/\1/")
+
+          echo "Branch global number found: $BRANCH_GLOBAL"
 
           # If this branch has no tags, get the highest global number across all branches and increment
           if [ -z "$BRANCH_GLOBAL" ]; then
+            echo "No tags found for this branch, checking all branches..."
             LATEST_NUMBER=$(git tag -l "${PREFIX}*.*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
+            echo "Latest global number across all branches: $LATEST_NUMBER"
             if [ -z "$LATEST_NUMBER" ]; then
               NEXT_NUMBER=1
             else
@@ -67,14 +74,23 @@ jobs:
           BRANCH_NAME="${{ steps.branch.outputs.name }}"
           GLOBAL_NUMBER="${{ steps.global_increment.outputs.number }}"
 
-          # Get all tags for this specific branch with this global number
-          BRANCH_TAGS=$(git tag -l "${PREFIX}${GLOBAL_NUMBER}.${BRANCH_NAME}-*" | sed "s/${PREFIX}${GLOBAL_NUMBER}\.${BRANCH_NAME}-\([0-9]*\)/\1/" | sort -n | tail -1)
+          echo "🔍 Looking for tags: ${PREFIX}${GLOBAL_NUMBER}.${BRANCH_NAME}-*"
+          git tag -l "${PREFIX}${GLOBAL_NUMBER}.${BRANCH_NAME}-*"
 
-          # If no tags exist for this branch, start at 1
+          # Get all tags for this specific branch with this global number
+          BRANCH_TAGS=$(git tag -l "${PREFIX}${GLOBAL_NUMBER}.${BRANCH_NAME}-*")
+
+          echo "Found tags: $BRANCH_TAGS"
+
           if [ -z "$BRANCH_TAGS" ]; then
             BRANCH_NUMBER=1
+            echo "No tags found for this branch, starting at 1"
           else
-            BRANCH_NUMBER=$((BRANCH_TAGS + 1))
+            # Extract the highest number
+            LATEST=$(echo "$BRANCH_TAGS" | sed "s/${PREFIX}${GLOBAL_NUMBER}\.${BRANCH_NAME}-\([0-9]*\)/\1/" | sort -n | tail -1)
+            echo "Latest branch number: $LATEST"
+            BRANCH_NUMBER=$((LATEST + 1))
+            echo "Next branch number: $BRANCH_NUMBER"
           fi
 
           echo "number=$BRANCH_NUMBER" >> $GITHUB_OUTPUT
@@ -88,9 +104,22 @@ jobs:
           BRANCH_NAME="${{ steps.branch.outputs.name }}"
 
           TAG_NAME="${PREFIX}${GLOBAL_NUM}.${BRANCH_NAME}-${BRANCH_NUM}"
+          echo "Generated tag: $TAG_NAME"
           echo "name=$TAG_NAME" >> $GITHUB_OUTPUT
 
+      - name: Check if tag already exists
+        id: tag_exists
+        run: |
+          TAG_NAME="${{ steps.tag.outputs.name }}"
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "⚠️ Tag $TAG_NAME already exists. Skipping release creation."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Create Release
+        if: steps.tag_exists.outputs.exists == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -103,6 +132,7 @@ jobs:
 
       - name: Generate clickable link
         id: link
+        if: steps.tag_exists.outputs.exists == 'false'
         run: |
           REPO="${{ github.repository }}"
           RUN_ID="${{ github.run_id }}"
@@ -115,6 +145,7 @@ jobs:
           echo "release_link=$RELEASE_LINK" >> $GITHUB_OUTPUT
 
       - name: Display created tag with links
+        if: steps.tag_exists.outputs.exists == 'false'
         run: |
           echo "✅ Release created successfully!"
           echo ""
@@ -127,7 +158,15 @@ jobs:
           echo "🔗 View Workflow Run:"
           echo "${{ steps.link.outputs.actions_link }}"
 
+      - name: Tag already exists message
+        if: steps.tag_exists.outputs.exists == 'true'
+        run: |
+          echo "⚠️ Release creation skipped!"
+          echo "Tag ${{ steps.tag.outputs.name }} already exists."
+          echo "No duplicate release created."
+
       - name: Create Job Summary
+        if: steps.tag_exists.outputs.exists == 'false'
         run: |
           echo "# 🎉 Release Created Successfully!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -139,3 +178,12 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- [📦 View Release](${{ steps.link.outputs.release_link }})" >> $GITHUB_STEP_SUMMARY
           echo "- [▶️ View Workflow Run](${{ steps.link.outputs.actions_link }})" >> $GITHUB_STEP_SUMMARY
+
+      - name: Create Job Summary (Tag exists)
+        if: steps.tag_exists.outputs.exists == 'true'
+        run: |
+          echo "# ⚠️ Release Already Exists!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** \`${{ steps.tag.outputs.name }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "This tag has already been created. No duplicate release was generated." >> $GITHUB_STEP_SUMMARY

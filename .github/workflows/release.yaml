@@ -1,25 +1,16 @@
 name: Create Release Tag
 
 on:
-  # Trigger on manual workflow dispatch
   workflow_dispatch:
     inputs:
-      version:
-        description: "Release version (e.g., v1.0.0)"
+      release_title:
+        description: "Release title/name"
         required: true
         type: string
-      release_name:
-        description: "Release name/title"
+      release_description:
+        description: "Release description/notes"
         required: false
         type: string
-      body:
-        description: "Release notes/description"
-        required: false
-        type: string
-
-  # Alternatively, trigger on push to main with a commit message containing [release]
-  push:
-    branches: ["main"]
 
 permissions:
   contents: write
@@ -30,27 +21,50 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Create Release Tag (Manual)
-        if: github.event_name == 'workflow_dispatch'
+      - name: Get branch name
+        id: branch
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Get next increment number
+        id: increment
+        run: |
+          # Get all tags matching R1.* pattern and extract the number
+          LATEST_NUMBER=$(git tag -l 'R1.*' | sed 's/R1\.\([0-9]*\).*/\1/' | sort -n | tail -1)
+
+          # If no tags exist, start at 1
+          if [ -z "$LATEST_NUMBER" ]; then
+            NEXT_NUMBER=1
+          else
+            NEXT_NUMBER=$((LATEST_NUMBER + 1))
+          fi
+
+          echo "number=$NEXT_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Generate tag name
+        id: tag
+        run: |
+          TAG_NAME="R1.${{ steps.increment.outputs.number }}-${{ steps.branch.outputs.name }}"
+          echo "name=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      - name: Create Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: ${{ github.event.inputs.release_name || github.event.inputs.version }}
-          body: ${{ github.event.inputs.body }}
+          tag_name: ${{ steps.tag.outputs.name }}
+          release_name: ${{ github.event.inputs.release_title }}
+          body: ${{ github.event.inputs.release_description }}
           draft: false
           prerelease: false
 
-      - name: Create Release Tag (Auto on Push)
-        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[release]')
+      - name: Display created tag
         run: |
-          # Extract version from commit message if available
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          VERSION=$(echo "$COMMIT_MSG" | grep -oP '\[release\s+\K[^]]+' || echo "v${{ github.run_number }}")
-
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git tag -a "$VERSION" -m "Release $VERSION"
-          git push origin "$VERSION"
+          echo "✅ Release created successfully!"
+          echo "Tag: ${{ steps.tag.outputs.name }}"
+          echo "Title: ${{ github.event.inputs.release_title }}"
+          echo "Description: ${{ github.event.inputs.release_description }}"

@@ -37,69 +37,35 @@ jobs:
           fi
           echo "value=$PREFIX" >> $GITHUB_OUTPUT
 
-      - name: Get global increment number for prefix
+      - name: Get global increment number for this specific branch
         id: global_increment
         run: |
           PREFIX="${{ steps.prefix.outputs.value }}"
-
-          # Get all tags matching the prefix pattern and extract the number
-          LATEST_NUMBER=$(git tag -l "${PREFIX}*.*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
-
-          # If no tags exist, start at 1
-          if [ -z "$LATEST_NUMBER" ]; then
-            NEXT_NUMBER=1
-          else
-            NEXT_NUMBER=$((LATEST_NUMBER + 1))
-          fi
-
-          echo "number=$NEXT_NUMBER" >> $GITHUB_OUTPUT
-
-      - name: Check if current branch already has tags with this global number
-        id: branch_has_tags
-        run: |
-          PREFIX="${{ steps.prefix.outputs.value }}"
           BRANCH_NAME="${{ steps.branch.outputs.name }}"
-          GLOBAL_NUM="${{ steps.global_increment.outputs.number }}"
 
-          # Check if any tag exists for this branch with the CURRENT global number
-          BRANCH_TAGS=$(git tag -l "${PREFIX}${GLOBAL_NUM}.${BRANCH_NAME}-*")
+          # Get all tags for THIS SPECIFIC BRANCH and extract the global number
+          BRANCH_GLOBAL=$(git tag -l "${PREFIX}*.${BRANCH_NAME}-*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
 
-          if [ -z "$BRANCH_TAGS" ]; then
-            echo "has_tags=false" >> $GITHUB_OUTPUT
-            echo "increment=1" >> $GITHUB_OUTPUT
+          # If this branch has no tags, get the highest global number across all branches and increment
+          if [ -z "$BRANCH_GLOBAL" ]; then
+            LATEST_NUMBER=$(git tag -l "${PREFIX}*.*" | sed "s/${PREFIX}\([0-9]*\)\..*/\1/" | sort -n | tail -1)
+            if [ -z "$LATEST_NUMBER" ]; then
+              NEXT_NUMBER=1
+            else
+              NEXT_NUMBER=$((LATEST_NUMBER + 1))
+            fi
+            echo "number=$NEXT_NUMBER" >> $GITHUB_OUTPUT
           else
-            # Count existing tags and increment
-            COUNT=$(echo "$BRANCH_TAGS" | wc -l)
-            NEXT_COUNT=$((COUNT + 1))
-            echo "has_tags=true" >> $GITHUB_OUTPUT
-            echo "increment=$NEXT_COUNT" >> $GITHUB_OUTPUT
+            # Use the existing global number for this branch
+            echo "number=$BRANCH_GLOBAL" >> $GITHUB_OUTPUT
           fi
-
-      - name: Determine final global number
-        id: final_global
-        run: |
-          PREFIX="${{ steps.prefix.outputs.value }}"
-          BRANCH_NAME="${{ steps.branch.outputs.name }}"
-          GLOBAL_NUM="${{ steps.global_increment.outputs.number }}"
-          HAS_TAGS="${{ steps.branch_has_tags.outputs.has_tags }}"
-
-          # If current branch doesn't have tags with this global number, use current global number
-          # If current branch already has tags with this global number, check if we need to increment globally
-          if [[ "$HAS_TAGS" == "false" ]]; then
-            FINAL_GLOBAL=$GLOBAL_NUM
-          else
-            # Use the same global number
-            FINAL_GLOBAL=$GLOBAL_NUM
-          fi
-
-          echo "number=$FINAL_GLOBAL" >> $GITHUB_OUTPUT
 
       - name: Get branch-specific increment number
         id: branch_increment
         run: |
           PREFIX="${{ steps.prefix.outputs.value }}"
           BRANCH_NAME="${{ steps.branch.outputs.name }}"
-          GLOBAL_NUMBER="${{ steps.final_global.outputs.number }}"
+          GLOBAL_NUMBER="${{ steps.global_increment.outputs.number }}"
 
           # Get all tags for this specific branch with this global number
           BRANCH_TAGS=$(git tag -l "${PREFIX}${GLOBAL_NUMBER}.${BRANCH_NAME}-*" | sed "s/${PREFIX}${GLOBAL_NUMBER}\.${BRANCH_NAME}-\([0-9]*\)/\1/" | sort -n | tail -1)
@@ -117,7 +83,7 @@ jobs:
         id: tag
         run: |
           PREFIX="${{ steps.prefix.outputs.value }}"
-          GLOBAL_NUM="${{ steps.final_global.outputs.number }}"
+          GLOBAL_NUM="${{ steps.global_increment.outputs.number }}"
           BRANCH_NUM="${{ steps.branch_increment.outputs.number }}"
           BRANCH_NAME="${{ steps.branch.outputs.name }}"
 

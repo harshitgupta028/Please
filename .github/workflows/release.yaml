@@ -7,6 +7,12 @@ on:
 
   # Manual trigger from Actions tab
   workflow_dispatch:
+    inputs:
+      confirm_release:
+        description: "Confirm release creation"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -79,37 +85,45 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Display confirmation link (Waiting for user action)
+      - name: Generate confirmation link
+        id: confirmation
         if: steps.tag_exists.outputs.exists == 'false'
         run: |
           REPO="${{ github.repository }}"
           RUN_ID="${{ github.run_id }}"
           TAG_NAME="${{ steps.tag.outputs.name }}"
+          BRANCH_NAME="${{ steps.branch.outputs.name }}"
 
-          CONFIRMATION_LINK="https://github.com/${REPO}/actions/runs/${RUN_ID}"
+          # Create a URL with parameters to re-run the workflow with confirmation
+          CONFIRMATION_LINK="https://github.com/${REPO}/actions/workflows/release.yml?branch=${BRANCH_NAME}"
 
+          echo "link=$CONFIRMATION_LINK" >> $GITHUB_OUTPUT
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+
+      - name: Display waiting for confirmation
+        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.confirm_release != 'true'
+        run: |
           echo ""
           echo "⏳ WAITING FOR CONFIRMATION ⏳"
           echo ""
-          echo "Release Tag to be created: $TAG_NAME"
+          echo "Release Tag to be created: ${{ steps.tag.outputs.name }}"
           echo "Branch: ${{ steps.branch.outputs.name }}"
           echo ""
-          echo "🔗 Click the link below to confirm and create the release:"
-          echo "$CONFIRMATION_LINK"
+          echo "🔗 Click the link in the Job Summary below to confirm"
           echo ""
 
-      - name: Create Job Summary (Waiting for confirmation)
-        if: steps.tag_exists.outputs.exists == 'false'
+      - name: Create Job Summary (Waiting)
+        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.confirm_release != 'true'
         run: |
           REPO="${{ github.repository }}"
           RUN_ID="${{ github.run_id }}"
           TAG_NAME="${{ steps.tag.outputs.name }}"
 
-          CONFIRMATION_LINK="https://github.com/${REPO}/actions/runs/${RUN_ID}"
+          CONFIRMATION_LINK="https://github.com/${REPO}/actions/workflows/release.yml"
 
           echo "# ⏳ Waiting for Confirmation" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Release Tag:** \`$TAG_NAME\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Release Tag:** \`${TAG_NAME}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Branch:** ${{ steps.branch.outputs.name }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -117,19 +131,10 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "[✅ Click here to confirm and create release]($CONFIRMATION_LINK)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "After clicking the link above, re-run the workflow to create the tag." >> $GITHUB_STEP_SUMMARY
+          echo "Then click **Run workflow** and the release will be created." >> $GITHUB_STEP_SUMMARY
 
-      - name: Wait for manual approval
-        if: steps.tag_exists.outputs.exists == 'false'
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ secrets.GITHUB_TOKEN }}
-          approvers: ${{ github.actor }}
-          issue-title: "Approve Release: ${{ steps.tag.outputs.name }}"
-          issue-body: "Please approve the creation of release tag: ${{ steps.tag.outputs.name }} on branch ${{ steps.branch.outputs.name }}"
-
-      - name: Create Release (After approval)
-        if: steps.tag_exists.outputs.exists == 'false'
+      - name: Create Release (After confirmation)
+        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.confirm_release == 'true'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -140,30 +145,8 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Generate clickable link (Success)
-        id: link
-        if: steps.tag_exists.outputs.exists == 'false'
-        run: |
-          REPO="${{ github.repository }}"
-          TAG_NAME="${{ steps.tag.outputs.name }}"
-
-          RELEASE_LINK="https://github.com/${REPO}/releases/tag/${TAG_NAME}"
-
-          echo "release_link=$RELEASE_LINK" >> $GITHUB_OUTPUT
-
-      - name: Display created tag with links (Success)
-        if: steps.tag_exists.outputs.exists == 'false'
-        run: |
-          echo "✅ Release created successfully!"
-          echo ""
-          echo "📌 Tag: ${{ steps.tag.outputs.name }}"
-          echo "🌳 Branch: ${{ steps.branch.outputs.name }}"
-          echo ""
-          echo "🔗 View Release:"
-          echo "${{ steps.link.outputs.release_link }}"
-
       - name: Create Job Summary (Success)
-        if: steps.tag_exists.outputs.exists == 'false'
+        if: steps.tag_exists.outputs.exists == 'false' && github.event.inputs.confirm_release == 'true'
         run: |
           echo "# 🎉 Release Created Successfully!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
@@ -173,14 +156,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 📎 Quick Links" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- [📦 View Release](${{ steps.link.outputs.release_link }})" >> $GITHUB_STEP_SUMMARY
-
-      - name: Tag already exists message
-        if: steps.tag_exists.outputs.exists == 'true'
-        run: |
-          echo "⚠️ Release creation skipped!"
-          echo "Tag ${{ steps.tag.outputs.name }} already exists."
-          echo "No duplicate release created."
+          echo "- [📦 View Release](https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.name }})" >> $GITHUB_STEP_SUMMARY
 
       - name: Create Job Summary (Tag exists)
         if: steps.tag_exists.outputs.exists == 'true'

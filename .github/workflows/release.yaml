@@ -1,11 +1,11 @@
 name: Create Release
 
 on:
-  # Automatic trigger on push to branches
+  # Automatic trigger on push to main
   push:
-    branches: ["main", "feature/*"]
+    branches: ["main"]
 
-  # Manual trigger from Actions tab
+  # Manual trigger from Actions tab (for feature branches)
   workflow_dispatch:
 
 permissions:

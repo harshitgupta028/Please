@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Birthday Party Planner 🎉</title>
+    <title>This Took Effort BTW ✨</title>
 
     <style>
         * {
@@ -487,6 +487,89 @@
                 padding: 24px;
             }
         }
+
+        /* =========================
+   CUSTOM MODAL
+========================= */
+
+        .custom-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            opacity: 0;
+            visibility: hidden;
+
+            transition: all 0.3s ease;
+
+            z-index: 9999;
+        }
+
+        .custom-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            width: 90%;
+            max-width: 420px;
+
+            background: linear-gradient(135deg,
+                    #fff4f8 0%,
+                    #ffeef8 45%,
+                    #f6ecff 100%);
+
+            border-radius: 30px;
+
+            padding: 35px;
+
+            text-align: center;
+
+            box-shadow:
+                0 20px 60px rgba(255, 118, 156, 0.35);
+
+            animation: modalPop 0.35s ease;
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-emoji {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.7em;
+            font-weight: 800;
+            color: #ff4f81;
+            margin-bottom: 15px;
+        }
+
+        .modal-message {
+            color: #666;
+            font-size: 1.05em;
+            line-height: 1.7;
+            margin-bottom: 28px;
+        }
+
+        .modal-button {
+            margin-top: 0;
+        }
     </style>
 </head>
 
@@ -585,11 +668,9 @@
                 All you need to do is be exited and show up with your beautiful smile 😘 and offcorse the money💰
             </p>
 
-            <div class="button-group">
-                <button class="cta-button" onclick="shareJourney()">
-                    Share the Joy with Harshit 💌
-                </button>
-            </div>
+            <button class="cta-button" onclick="openGiftModal()">
+                Share the Joy with Harshit 💌
+            </button>
 
         </div>
 
@@ -828,7 +909,11 @@
 
                 if (!selectedDate) {
 
-                    alert('Please select a date 📅');
+                    showModal(
+                        "📅",
+                        "Pick a Date First",
+                        "Aa..Aa..Aa.. I won't let you escape this time 😌"
+                    );
 
                     currentStage--;
 
@@ -841,7 +926,11 @@
 
                 if (!selectedCafe) {
 
-                    alert('Please select a cafe 🍽️');
+                    showModal(
+                        "🍽️",
+                        "Choose a Cafe",
+                        "Please do overthinking and choose a cafe 🎀"
+                    );
 
                     currentStage--;
 
@@ -854,7 +943,11 @@
 
                 if (!selectedDessert) {
 
-                    alert('Please select a dessert place 🍰');
+                    showModal(
+                        "🍰",
+                        "Dessert is Mandatory",
+                        "You're trying to skip dessert... not gonna happen 😌"
+                    );
 
                     currentStage--;
 
@@ -866,13 +959,33 @@
         }
 
         // WhatsApp Share
-        function shareJourney() {
+        function openGiftModal() {
+
+            document.getElementById('giftModal')
+                .classList.add('show');
+        }
+
+        function closeGiftModal() {
+
+            document.getElementById('giftModal')
+                .classList.remove('show');
+        }
+
+        function shareWithGift(wantsGift) {
+
+            closeGiftModal();
+
+            const giftChoice = wantsGift
+                ? "🎁 And yes... Priya wants a birthday gift too 😌"
+                : "😌 Priya said she doesn't want a gift (still unbelievable though).";
 
             const message = `🎉 Priya's Birthday Party is Planned! ✨
 
 📅 Date: ${selectedDate}
 🍽️ Cafe: ${selectedCafe}
 🍰 Dessert: ${selectedDessert}
+
+${giftChoice}
 
 "Life is a party, dress like it!" 🎊💕`;
 
@@ -882,7 +995,93 @@
             window.open(whatsappURL, '_blank');
         }
 
+        // CUSTOM MODAL
+
+        function showModal(emoji, title, message) {
+
+            document.getElementById('modalEmoji').innerText = emoji;
+
+            document.getElementById('modalTitle').innerText = title;
+
+            document.getElementById('modalMessage').innerText = message;
+
+            document.getElementById('customModal')
+                .classList.add('show');
+        }
+
+        function closeModal() {
+
+            document.getElementById('customModal')
+                .classList.remove('show');
+        }
+
     </script>
+
+    <!-- CUSTOM MODAL -->
+    <div class="custom-modal" id="customModal">
+
+        <div class="modal-box">
+
+            <div class="modal-emoji" id="modalEmoji">
+                🎉
+            </div>
+
+            <div class="modal-title" id="modalTitle">
+                Oops!
+            </div>
+
+            <div class="modal-message" id="modalMessage">
+                Something went wrong
+            </div>
+
+            <button class="cta-button modal-button" onclick="closeModal()">
+                Okay 💕
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- GIFT MODAL -->
+    <div class="custom-modal" id="giftModal">
+
+        <div class="modal-box">
+
+            <div class="modal-emoji">
+                🎁
+            </div>
+
+            <div class="modal-title">
+                One Important Question 😌
+            </div>
+
+            <div class="modal-message">
+                Do you want a birthday present too? ✨
+            </div>
+
+            <div style="
+            display:flex;
+            gap:15px;
+            justify-content:center;
+            margin-top:25px;
+            flex-wrap:wrap;
+        ">
+
+                <button class="cta-button modal-button" onclick="shareWithGift(true)">
+                    Yes Obviously 🎀
+                </button>
+
+                <button class="cta-button modal-button" style="
+                    background:linear-gradient(135deg,#c9c9c9,#9f9f9f);
+                " onclick="shareWithGift(false)">
+                    No I'm Nice 😌
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </body>
 

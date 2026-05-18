@@ -217,6 +217,28 @@
             margin-top: 5px;
         }
 
+        .date-card.disabled {
+            background: #f1f1f1;
+            border-color: #d0d0d0;
+            color: #999;
+            cursor: not-allowed;
+            opacity: 0.75;
+            position: relative;
+        }
+
+        .date-card.disabled:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: #d0d0d0;
+        }
+
+        .date-card.disabled::after {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            font-size: 1.1em;
+        }
+
         /* =========================
            CAFE CARDS
         ========================== */
@@ -725,13 +747,20 @@
         // Generate Dates
         function generateWeekendDates() {
 
+            const unavailableDates = [
+                "2026-06-21",
+                "2026-06-27",
+                "2026-06-28",
+                "2026-07-04"
+            ];
+
             const datesGrid = document.getElementById('datesGrid');
 
             datesGrid.innerHTML = '';
 
             const today = new Date();
 
-            for (let i = 0, count = 0; i < 120 && count < 12; i++) {
+            for (let i = 0, count = 0; i < 120 && count < 14; i++) {
 
                 const date = new Date(today);
 
@@ -747,21 +776,45 @@
 
                     card.className = 'date-card';
 
+                    const formattedDate =
+                        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+                    const isUnavailable =
+                        unavailableDates.includes(formattedDate);
+
+                    if (isUnavailable) {
+                        card.classList.add('disabled');
+                    }
+
                     card.innerHTML = `
-                        <div class="day">
-                            ${date.toLocaleDateString('en-US', { weekday: 'short' })}
-                        </div>
+                <div class="day">
+                    ${date.toLocaleDateString('en-US', { weekday: 'short' })}
+                </div>
 
-                        <div class="date">
-                            ${date.getDate()}
-                        </div>
+                <div class="date">
+                    ${date.getDate()}
+                </div>
 
-                        <div class="month">
-                            ${date.toLocaleDateString('en-US', { month: 'short' })}
-                        </div>
-                    `;
+                <div class="month">
+                    ${date.toLocaleDateString('en-US', { month: 'short' })}
+                </div>
+            `;
 
-                    card.onclick = () => selectDate(card, date);
+                    card.onclick = () => {
+
+                        if (isUnavailable) {
+
+                            showModal(
+                                "😭",
+                                "Oopsss...",
+                                "Harshit isn't available on this date 💔"
+                            );
+
+                            return;
+                        }
+
+                        selectDate(card, date);
+                    };
 
                     datesGrid.appendChild(card);
                 }
@@ -929,7 +982,7 @@
                     showModal(
                         "🍽️",
                         "Choose a Cafe",
-                        "Please do OVERTHINKING and choose a cafe 🎀"
+                        "Please OVERTHINK and choose a cafe 🎀"
                     );
 
                     currentStage--;

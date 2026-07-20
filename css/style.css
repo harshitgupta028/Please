@@ -367,37 +367,18 @@ body::after {
 ========================================================== */
 
 #stage {
-  position: absolute;
-
+  position: fixed;
   inset: 0;
-
-  display: flex;
-
-  align-items: anchor-center;
-
-  justify-content: center;
-
-  padding-bottom: 120px;
-
   pointer-events: none;
 }
 
-/* ==========================================================
-   BUNNY
-========================================================== */
-
 #bunny-container {
-  position: relative;
+  position: absolute;
 
-  width: 280px;
+  left: 50%;
+  top: 50%;
 
-  display: flex;
-
-  justify-content: center;
-
-  align-items: flex-end;
-
-  animation: bunnyBreathing 5s ease-in-out infinite;
+  transform: translate(-50%, -50%);
 
   pointer-events: auto;
 }
@@ -1424,16 +1405,6 @@ BUNNY FLOATING
     transform 2s ease;
 }
 
-#bunny-container.floating {
-  position: absolute;
-
-  left: 50%;
-
-  top: 65%;
-
-  transform: translate(-50%, -50%);
-}
-
 /*====================================================
 HOP
 ====================================================*/
@@ -1471,28 +1442,6 @@ ROTATE
 
   100% {
     transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
-
-/*====================================================
-SOFT FLOAT
-====================================================*/
-
-.bunny-float {
-  animation: floatAround 8s ease-in-out infinite;
-}
-
-@keyframes floatAround {
-  0% {
-    transform: translate(-50%, -50%) translateY(0px);
-  }
-
-  50% {
-    transform: translate(-50%, -50%) translateY(-6px);
-  }
-
-  100% {
-    transform: translate(-50%, -50%) translateY(0px);
   }
 }
 
@@ -1773,10 +1722,14 @@ Tap Hint
 ========================================== */
 
 #bunny-container {
-  transition:
-    left 2.5s ease-in-out,
-    top 2.5s ease-in-out,
-    transform 2.5s ease-in-out;
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 20;
 }
 
 #bunny-container.move-home {

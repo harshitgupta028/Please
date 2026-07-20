@@ -642,6 +642,7 @@ function moveBunnyToCorner() {
 
 async function showPage() {
   if (currentPage >= story.length) {
+    console.log("Story Finished");
     storyFinished();
     return;
   }
@@ -705,45 +706,7 @@ async function storyFinished() {
 
   await sleep(2500);
 
-  await finalMessage(`One last thing...`);
-
-  await finalMessage(
-    `This little light isn't here to make your room brighter...`,
-  );
-
-  await finalMessage(`It's here to remind you...`);
-
-  await finalMessage(
-    `A month ago...
-
-this was simply
-
-an apartment.`,
-  );
-
-  await finalMessage(
-    `Tonight...
-
-it finally feels
-
-like home.`,
-  );
-
   bunnyGlow();
-
-  await finalMessage(
-    `Homes aren't found...
-
-They're built...
-
-one brave day...
-
-one solved problem...
-
-one peaceful night...
-
-at a time.`,
-  );
 
   await sleep(1000);
 
@@ -835,11 +798,17 @@ function sleep(ms) {
 }
 
 async function finalMessage(text) {
-  storyText.innerHTML = "";
+  storyText.innerHTML = text;
 
-  await typeText(text);
+  storyBox.classList.remove("hide");
+  storyBox.classList.add("show");
 
-  await sleep(2200);
+  await sleep(3000);
+
+  storyBox.classList.remove("show");
+  storyBox.classList.add("hide");
+
+  await sleep(800);
 }
 
 function bunnyGlow() {
@@ -859,91 +828,7 @@ async function finalScene() {
 
   await sleep(1200);
 
-  createFinalCard();
-}
-
-function createFinalCard() {
-  const card = document.createElement("div");
-
-  card.id = "ending-card";
-
-  card.innerHTML = `
-
-        <div class="ending-content">
-
-            <h1>🐰</h1>
-
-            <h2>Welcome Home.</h2>
-
-            <p>
-
-            Not to a flat.
-
-            <br><br>
-
-            But to your home.
-
-            </p>
-
-            <br>
-
-            <div class="gift-message">
-
-            May this tiny bunny quietly light your room,
-
-            your nights,
-
-            and remind you
-
-            how far you've already come.
-
-            </div>
-
-            <br><br>
-
-            <button id="giftBtn">
-
-            🎁 Open Your Gift
-
-            </button>
-
-        </div>
-
-    `;
-
-  document.body.appendChild(card);
-
-  document.getElementById("giftBtn").addEventListener("click", giftReveal);
-}
-
-async function giftReveal() {
-  const btn = document.getElementById("giftBtn");
-
-  btn.remove();
-
-  const text = document.createElement("div");
-
-  text.className = "gift-letter";
-
-  text.innerHTML = `
-
-A tiny bunny...
-
-for someone
-
-who quietly proved
-
-that even difficult beginnings
-
-can have beautiful endings.
-
-🤍
-
-`;
-
-  document.querySelector(".ending-content").appendChild(text);
-
-  createConfetti();
+  document.getElementById("finalButtonContainer").classList.add("show");
 }
 
 function createConfetti() {
@@ -966,6 +851,24 @@ function createConfetti() {
   }
 }
 
+const finalBtn = document.getElementById("finalBtn");
+const endingCard = document.getElementById("ending-card");
+const closeLetter = document.getElementById("closeLetter");
+
+finalBtn.addEventListener("click", () => {
+  // Hide the button
+  document.getElementById("finalButtonContainer").classList.remove("show");
+
+  // Show the modal
+  endingCard.classList.add("show");
+
+  // Celebration
+  createConfetti();
+});
+
+closeLetter.addEventListener("click", () => {
+  endingCard.classList.remove("show");
+});
 /* ==========================================================
    START APPLICATION
 ========================================================== */

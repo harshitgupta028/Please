@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>A Little Bunny Has Something To Tell You 🐰</title>
+
+    <meta name="description" content="A tiny story for someone special." />
+
+    <meta name="theme-color" content="#07111D">
+
+    <!-- Google Font -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+    <!-- ===================================================== -->
+    <!-- LOADER -->
+    <!-- ===================================================== -->
+
+    <div id="loader">
+
+        <div class="loader-content">
+
+            <div class="loader-moon"></div>
+
+            <p>Preparing a little story...</p>
+
+        </div>
+
+    </div>
+
+    <!-- ===================================================== -->
+    <!-- MAIN APP -->
+    <!-- ===================================================== -->
+
+    <main id="app">
+
+        <!-- ================================================= -->
+        <!-- NIGHT SKY -->
+        <!-- ================================================= -->
+
+        <section id="sky">
+
+            <!-- Stars generated from JS -->
+
+            <div id="stars"></div>
+
+            <!-- Moon -->
+
+            <div id="moon">
+
+                <div class="moon-glow"></div>
+
+                <div class="moon-body"></div>
+
+            </div>
+
+        </section>
+
+        <!-- ================================================= -->
+        <!-- BUNNY AREA -->
+        <!-- ================================================= -->
+
+        <section id="stage">
+
+            <div id="bunny-container">
+
+                <img id="bunny" src="assets/images/little-light.png" alt="Cute Bunny Lamp">
+
+            </div>
+
+        </section>
+
+        <!-- Story Overlay -->
+
+        <div id="story-overlay">
+
+            <div id="story-box">
+
+                <p id="story-text"></p>
+
+            </div>
+
+        </div>
+
+        <!-- ================================================= -->
+        <!-- SPEECH -->
+        <!-- ================================================= -->
+
+        <!-- <section id="dialogue">
+
+            <div id="speech-bubble">
+
+                <p id="speech-text"></p>
+
+            </div>
+
+        </section> -->
+        <div id="tapHint">
+
+            ✨ Tap the little bunny to begin ✨
+
+        </div>
+
+    </main>
+
+    <!-- ===================================================== -->
+    <!-- AUDIO -->
+    <!-- ===================================================== -->
+
+    <audio id="ambient-audio" preload="auto" loop>
+
+        <source src="assets/ambient.mp3" type="audio/mpeg">
+
+    </audio>
+
+    <!-- ===================================================== -->
+    <!-- SCRIPTS -->
+    <!-- ===================================================== -->
+
+    <script src="js/audio.js"></script>
+
+    <script src="js/bunny.js"></script>
+
+    <script src="js/story.js"></script>
+
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>

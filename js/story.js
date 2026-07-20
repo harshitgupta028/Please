@@ -1,189 +1,117 @@
 const story = [
+  "Hey... I'm Bunny... ",
 
-`Every home...
+  "I'm here to tell you a story",
 
-has a story.`,
+  "🏡 Every home... has a story.",
 
-`Yours...
+  "🤍 Yours... didn't begin perfectly.",
 
-didn't begin perfectly.`,
+  "Couple of months ago... this wasn't a home.",
 
-`A month ago...
+  "It was simply... an unfamiliar apartment 🚪",
 
-this wasn't home.`,
+  "A place filled with mess... questions... and uncertainty.",
 
-`It was simply...
+  "You weren't even sure... if moving here... was the right decision 💭 ",
 
-an unfamiliar apartment.`,
+  "Then... ✨",
 
-`A place filled with boxes...
+  "Everything changed. 🌸",
 
-questions...
+  "🚚 You've made the decision to move.",
 
-and uncertainty.`,
+  "🤝 Making unknown people your roommates... was a leap of faith.",
 
-`You weren't even sure...
+  "The beginning... wasn't the one you imagined. 🌧️",
 
-if moving here...
+  "Roommates left within a week... 💔",
 
-was the right decision.`,
+  "🌙 Some nights... felt much longer... than they should have.",
 
-`Then...`,
+  "🪨 Some decisions... felt much heavier... than they looked.",
 
-`Everything changed.`,
+  "💛 But through all of it... You never stopped.",
 
-`Plans changed.`,
+  "🌱 You stayed calm... You kept moving forward.",
 
-`People left.`,
+  "Slowly... 🌼",
 
-`The beginning...
+  "✨ Things began to fall into place.",
 
-wasn't the one you imagined.`,
+  "🫂 The right roommate found you.",
 
-`Some nights...
+  "🏠 The room... felt a little warmer.",
 
-felt much longer...
+  "🛏️ Then came... the search for a bed.",
 
-than they should have.`,
+  "⏳ It took weeks...",
 
-`Some decisions...
+  "🛌 But eventually... the perfect one found its place.",
 
-felt much heavier...
+  "And little by little... 🌸",
 
-than they looked.`,
+  "Something changed ✨",
 
-`But through all of it...`,
+  "🤍 The apartment... started feeling different.",
 
-`You never stopped.`,
+  "🌙 Quieter.",
 
-`You stayed calm.`,
+  "🕯️ Safer.",
 
-`You kept moving forward.`,
+  "☁️ Comfortable.",
 
-`Slowly...`,
+  "It stopped feeling... like a place you rented.",
 
-`Things began to fall into place.`,
+  "🏡 And started feeling... like somewhere you belonged.",
 
-`The right roommate found you.`,
+  "💫 That's the funny thing about homes...",
 
-`The room...
+  "They aren't built... in a single day.",
 
-felt a little warmer.`,
+  "They're built from moments like these...🧱",
 
-`Then came...
+  "🌟 One solved problem...",
 
-the search for a bed.`,
+  "😴 One peaceful night...",
 
-`It took weeks...`,
+  "🎉 One little victory... at a time.",
 
-`But eventually...
+  "Without even realizing it... 🌠",
 
-the perfect one found its place.`,
+  "🖼️ You transformed... four unfamiliar walls...",
 
-`And little by little...`,
+  "🌍 Into your own little world.",
 
-`Something changed.`,
+  "...",
 
-`The apartment...
+  "🐰 And that's where... I come in.",
 
-started feeling different.`,
+  "💛 I've been quietly waiting... for the right moment... to say hello.",
 
-`Quieter.`,
+  "From today... ✨",
 
-`Safer.`,
+  "🤍 I'll be here...",
 
-`Comfortable.`,
+  "🌙 On the nights that feel a little too long.",
 
-`It stopped feeling...
+  "🌧️ On the days... when everything feels a little too loud.",
 
-like a place you rented.`,
+  "💡 I'll quietly... light the room.",
 
-`And started feeling...
+  "⭐ And whenever... you wonder... if everything will work out...",
 
-like somewhere you belonged.`,
+  "👀 Just look around.",
 
-`That's the funny thing about homes...`,
+  "💪 You've already done... the hardest part.",
 
-`They aren't built...
+  "🏡 This room... is living proof.",
 
-in a single day.`,
+  "💝 So... thank you...",
 
-`They're built...`,
+  "🛏️ For saving... a little space beside your bed... for me.",
 
-`One solved problem...`,
+  "🤍 Welcome home.",
 
-`One peaceful night...`,
-
-`One little victory...
-
-at a time.`,
-
-`Without even realizing it...`,
-
-`You transformed...
-
-four unfamiliar walls...`,
-
-`Into your own little world.`,
-
-`...`,
-
-`And that's where...
-
-I come in. 🐰`,
-
-`I've been quietly waiting...
-
-for the right moment...
-
-to say hello.`,
-
-`From today...`,
-
-`I'll be here...`,
-
-`On the nights that feel a little too long.`,
-
-`On the days...
-
-when everything feels a little too loud.`,
-
-`I'll quietly...
-
-light the room.`,
-
-`And whenever...
-
-you wonder...
-
-if everything will work out...`,
-
-`Just look around.`,
-
-`You've already done...
-
-the hardest part.`,
-
-`This room...
-
-is living proof.`,
-
-`So...
-
-thank you...`,
-
-`For saving...
-
-a little space beside your bed...
-
-for me.`,
-
-`Welcome home. 🤍`,
-
-`Not to a flat...
-
-but to a place...
-
-that finally became yours.`
-
+  "🏡 Not to a flat... but to a place... that finally became yours.",
 ];

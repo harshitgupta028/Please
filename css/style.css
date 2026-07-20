@@ -601,7 +601,7 @@ body::after {
   }
 
   #bunny {
-    max-width: 180px;
+    max-width: 220px;
   }
 }
 
@@ -1883,6 +1883,75 @@ Tap Hint
 
   animation: fadeIn 0.6s ease;
 }
+
+.letter-bunny {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+#final-bunny {
+  width: 170px;
+  height: auto;
+
+  filter: drop-shadow(0 0 20px rgba(255, 225, 140, 0.45))
+    drop-shadow(0 18px 35px rgba(0, 0, 0, 0.25));
+
+  animation: letterBunnyFloat 4s ease-in-out infinite;
+}
+
+@keyframes letterBunnyFloat {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@media (max-width: 768px) {
+  #final-bunny {
+    width: 140px;
+  }
+}
+
+@media (max-width: 480px) {
+  #final-bunny {
+    width: 120px;
+  }
+}
+
+.lumi-introduce {
+  animation: lumiIntroduce 1.6s ease;
+}
+
+@keyframes lumiIntroduce {
+  0% {
+    transform: rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.25));
+  }
+
+  30% {
+    transform: rotate(-6deg) scale(1.05);
+    filter: drop-shadow(0 0 35px rgba(255, 220, 120, 0.9));
+  }
+
+  60% {
+    transform: rotate(8deg) scale(1.08);
+    filter: drop-shadow(0 0 45px rgba(255, 220, 120, 1));
+  }
+
+  100% {
+    transform: rotate(0deg) scale(1);
+    filter: drop-shadow(0 0 15px rgba(255, 220, 120, 0.35));
+  }
+}
+
 /* ==========================================================
    END OF FILE
 ========================================================== */

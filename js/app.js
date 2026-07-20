@@ -580,6 +580,8 @@ const App = {
 
 const bunny = document.getElementById("bunny");
 
+const ambientAudio = document.getElementById("ambient-audio");
+
 const storyBox = document.getElementById("story-box");
 
 const storyText = document.getElementById("story-text");
@@ -591,8 +593,27 @@ let writing = false;
 bunny.addEventListener("click", () => {
   if (writing) return;
 
+  fadeInAudio(ambientAudio, 0.05, 6000);
+
   startStory();
 });
+
+function fadeInAudio(audio, targetVolume = 0.2, duration = 5000) {
+  audio.volume = 0;
+  audio.play();
+
+  const stepTime = 100; // every 100ms
+  const step = targetVolume / (duration / stepTime);
+
+  const fade = setInterval(() => {
+    if (audio.volume < targetVolume - step) {
+      audio.volume += step;
+    } else {
+      audio.volume = targetVolume;
+      clearInterval(fade);
+    }
+  }, stepTime);
+}
 
 function startStory() {
   const hint = document.getElementById("tapHint");
@@ -745,7 +766,19 @@ function sceneReaction(index) {
   if (index == 18) {
     shootingStars();
   }
+
+  if (index === 41) {
+    bunny.classList.remove("lumi-introduce");
+
+    void bunny.offsetWidth;
+
+    bunny.classList.add("lumi-introduce");
+  }
 }
+
+bunny.addEventListener("animationend", () => {
+  bunny.classList.remove("lumi-introduce");
+});
 
 function createHeart() {
   for (let i = 0; i < 12; i++) {
@@ -772,7 +805,7 @@ function createHeart() {
 }
 
 function shootingStars() {
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 8; i++) {
     setTimeout(() => {
       const s = document.createElement("div");
 

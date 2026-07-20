@@ -21,11 +21,11 @@ const story = [
 
   "🚚 You've made the decision to move",
 
-  "🤝 Making unknown people your roommates... was a leap of faith",
+  "🤝 Making unknown people your flatemates... was a leap of faith",
 
   "The beginning... wasn't the one you imagined. 🌧️",
 
-  "Roommates left within a week... 💔",
+  "Flatemates left within a week... 💔",
 
   "🌙 Some nights... felt much longer... than they should have",
 
@@ -39,7 +39,7 @@ const story = [
 
   "✨ Things began to fall into place",
 
-  "🫂 The right roommate found you",
+  "🫂 The right flatemates found you",
 
   "🏠 The room... felt a little warmer",
 
@@ -111,7 +111,7 @@ const story = [
 
   "🛏️ For saving... a little space beside your bed... for me",
 
-  "🤍 Welcome home",
+  "🤍 Welcome home... Priya",
 
   "🏡 Not to a flat... but to a place... that finally became yours",
 ];

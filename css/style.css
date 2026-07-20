@@ -1,0 +1,1796 @@
+/* ==========================================================
+   RESET
+========================================================== */
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Outfit", sans-serif;
+}
+
+/* ==========================================================
+   THEME
+========================================================== */
+
+:root {
+  --bg: #07111d;
+
+  --bg2: #0b1726;
+
+  --moon: #f8f4dd;
+
+  --text: #ececec;
+
+  --bubble: #fffffb;
+
+  --bubbleText: #3b3b3b;
+
+  --gold: #f4d27a;
+
+  --shadow: rgba(0, 0, 0, 0.35);
+}
+
+/* ==========================================================
+   BODY
+========================================================== */
+
+body {
+  width: 100vw;
+  height: 100vh;
+
+  background: radial-gradient(circle at top, #12233b 0%, #07111d 70%);
+
+  color: var(--text);
+}
+
+/* ==========================================================
+   MAIN APP
+========================================================== */
+
+#app {
+  position: relative;
+
+  width: 100%;
+
+  height: 100%;
+
+  overflow: hidden;
+}
+
+/* ==========================================================
+   SKY
+========================================================== */
+
+#sky {
+  position: absolute;
+
+  inset: 0;
+
+  overflow: hidden;
+}
+
+/* ==========================================================
+   STARS
+========================================================== */
+
+#stars {
+  position: absolute;
+
+  inset: 0;
+}
+
+.star {
+  position: absolute;
+
+  width: 2px;
+
+  height: 2px;
+
+  background: white;
+
+  border-radius: 50%;
+
+  opacity: 0.85;
+
+  animation: twinkle linear infinite;
+}
+
+/* Different star sizes */
+
+.star.small {
+  width: 2px;
+
+  height: 2px;
+}
+
+.star.medium {
+  width: 3px;
+
+  height: 3px;
+}
+
+.star.large {
+  width: 4px;
+
+  height: 4px;
+}
+
+/* ==========================================================
+   MOON
+========================================================== */
+
+#moon {
+  position: absolute;
+
+  top: 80px;
+
+  left: 120px;
+
+  width: 140px;
+
+  height: 140px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+/* ==========================================================
+   MOON GLOW
+========================================================== */
+
+.moon-glow {
+  position: absolute;
+
+  width: 230px;
+
+  height: 230px;
+
+  border-radius: 50%;
+
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.05),
+    transparent 72%
+  );
+
+  animation: moonGlow 8s ease-in-out infinite;
+}
+
+/* ==========================================================
+   MOON BODY
+========================================================== */
+
+.moon-body {
+  position: relative;
+
+  width: 110px;
+
+  height: 110px;
+
+  border-radius: 50%;
+
+  background: var(--moon);
+
+  box-shadow:
+    0 0 35px rgba(255, 255, 255, 0.28),
+    0 0 80px rgba(255, 255, 255, 0.1);
+}
+
+/* ==========================================================
+   MOON CRATERS
+========================================================== */
+
+.moon-body::before {
+  content: "";
+
+  position: absolute;
+
+  width: 18px;
+
+  height: 18px;
+
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.05);
+
+  top: 26px;
+
+  left: 34px;
+}
+
+.moon-body::after {
+  content: "";
+
+  position: absolute;
+
+  width: 12px;
+
+  height: 12px;
+
+  border-radius: 50%;
+
+  background: rgba(0, 0, 0, 0.04);
+
+  bottom: 24px;
+
+  right: 28px;
+}
+
+/* ==========================================================
+   SUBTLE VIGNETTE
+========================================================== */
+
+body::after {
+  content: "";
+
+  position: fixed;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background: radial-gradient(
+    circle,
+    transparent 58%,
+
+    rgba(0, 0, 0, 0.28)
+  );
+}
+
+/* ==========================================================
+   SHOOTING STAR
+========================================================== */
+
+.shooting-star {
+  position: absolute;
+
+  width: 140px;
+
+  height: 2px;
+
+  background: linear-gradient(90deg, white, transparent);
+
+  border-radius: 100px;
+
+  opacity: 0;
+
+  transform: rotate(-25deg);
+}
+
+/* ==========================================================
+   AMBIENT FOG
+========================================================== */
+
+#sky::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  background: radial-gradient(
+    circle at bottom,
+
+    rgba(255, 255, 255, 0.02),
+    transparent 70%
+  );
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 768px) {
+  #moon {
+    width: 100px;
+
+    height: 100px;
+
+    top: 45px;
+
+    left: 40px;
+  }
+
+  .moon-body {
+    width: 80px;
+
+    height: 80px;
+  }
+
+  .moon-glow {
+    width: 170px;
+
+    height: 170px;
+  }
+}
+
+/* ==========================================================
+   ANIMATIONS
+========================================================== */
+
+@keyframes moonGlow {
+  0% {
+    transform: scale(1);
+
+    opacity: 0.22;
+  }
+
+  50% {
+    transform: scale(1.08);
+
+    opacity: 0.35;
+  }
+
+  100% {
+    transform: scale(1);
+
+    opacity: 0.22;
+  }
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.15;
+
+    transform: scale(0.7);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform: scale(1.2);
+  }
+
+  100% {
+    opacity: 0.15;
+
+    transform: scale(0.7);
+  }
+}
+
+/* ==========================================================
+   STAGE
+========================================================== */
+
+#stage {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+
+  align-items: anchor-center;
+
+  justify-content: center;
+
+  padding-bottom: 120px;
+
+  pointer-events: none;
+}
+
+/* ==========================================================
+   BUNNY
+========================================================== */
+
+#bunny-container {
+  position: relative;
+
+  width: 280px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: flex-end;
+
+  animation: bunnyBreathing 5s ease-in-out infinite;
+
+  pointer-events: auto;
+}
+
+#bunny {
+  width: 100%;
+
+  max-width: 280px;
+
+  user-select: none;
+
+  -webkit-user-drag: none;
+
+  cursor: pointer;
+
+  filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.35));
+
+  transition:
+    transform 0.35s ease,
+    filter 0.35s ease;
+}
+
+#bunny:hover {
+  transform: translateY(-4px) scale(1.02);
+
+  filter: drop-shadow(0 30px 45px rgba(0, 0, 0, 0.45));
+}
+
+#bunny:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================
+   DIALOGUE
+========================================================== */
+
+#dialogue {
+  position: absolute;
+
+  top: 70px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: min(760px, 90vw);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  z-index: 100;
+}
+
+#speech-bubble {
+  position: relative;
+
+  background: var(--bubble);
+
+  color: var(--bubbleText);
+
+  border-radius: 28px;
+
+  padding: 28px 34px;
+
+  min-height: 120px;
+
+  width: 100%;
+
+  opacity: 0;
+
+  transform: translateY(20px);
+
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.22);
+}
+
+/* Bubble Tail */
+
+#speech-bubble::after {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+
+  bottom: -18px;
+
+  transform: translateX(-50%);
+
+  border-left: 18px solid transparent;
+
+  border-right: 18px solid transparent;
+
+  border-top: 20px solid var(--bubble);
+}
+
+/* ==========================================================
+   TEXT
+========================================================== */
+
+#speech-text {
+  text-align: center;
+
+  line-height: 1.8;
+
+  font-size: 1.45rem;
+
+  font-weight: 500;
+
+  letter-spacing: 0.4px;
+
+  min-height: 60px;
+}
+
+/* ==========================================================
+   FLOATING PARTICLES
+========================================================== */
+
+#particles {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+
+  width: 4px;
+
+  height: 4px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.45);
+
+  filter: blur(0.5px);
+}
+
+/* ==========================================================
+   STORY EMPHASIS
+========================================================== */
+
+.story-highlight {
+  color: var(--gold);
+
+  font-weight: 700;
+}
+
+.story-soft {
+  opacity: 0.75;
+}
+
+.story-small {
+  font-size: 1rem;
+}
+
+.story-big {
+  font-size: 2rem;
+
+  font-weight: 700;
+}
+
+/* ==========================================================
+   FADE HELPERS
+========================================================== */
+
+.fade-in {
+  animation: fadeIn 0.8s forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.8s forwards;
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 900px) {
+  #speech-text {
+    font-size: 1.2rem;
+  }
+
+  #bunny {
+    max-width: 220px;
+  }
+}
+
+@media (max-width: 600px) {
+  #dialogue {
+    top: 40px;
+
+    width: 94vw;
+  }
+
+  #speech-bubble {
+    padding: 22px;
+
+    border-radius: 22px;
+  }
+
+  #speech-text {
+    font-size: 1rem;
+
+    line-height: 1.6;
+  }
+
+  #choices {
+    width: 90%;
+
+    gap: 14px;
+  }
+
+  .choice-button {
+    width: 100%;
+  }
+
+  #bunny {
+    max-width: 180px;
+  }
+}
+
+/* ==========================================================
+   ANIMATIONS
+========================================================== */
+
+@keyframes bunnyBreathing {
+  0% {
+    transform: translateY(0px) scale(1);
+  }
+
+  50% {
+    transform: translateY(-4px) scale(1.015);
+  }
+
+  100% {
+    transform: translateY(0px) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+
+    transform: translateY(-15px);
+  }
+}
+
+/* ==========================================================
+   LOADER
+========================================================== */
+
+#loader {
+  position: fixed;
+
+  inset: 0;
+
+  background: var(--bg);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  z-index: 9999;
+
+  transition:
+    opacity 0.8s ease,
+    visibility 0.8s ease;
+}
+
+#loader.hidden {
+  opacity: 0;
+
+  visibility: hidden;
+}
+
+.loader-content {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  gap: 24px;
+}
+
+.loader-moon {
+  width: 70px;
+
+  height: 70px;
+
+  border-radius: 50%;
+
+  background: var(--moon);
+
+  box-shadow:
+    0 0 30px rgba(255, 255, 255, 0.35),
+    0 0 80px rgba(255, 255, 255, 0.12);
+
+  animation: loaderPulse 2.5s ease-in-out infinite;
+}
+
+.loader-content p {
+  color: var(--text);
+
+  font-size: 1rem;
+
+  opacity: 0.85;
+
+  letter-spacing: 1px;
+}
+
+/* ==========================================================
+   GLASS EFFECT
+========================================================== */
+
+.glass {
+  backdrop-filter: blur(18px);
+
+  -webkit-backdrop-filter: blur(18px);
+
+  background: rgba(255, 255, 255, 0.08);
+
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* ==========================================================
+   CURSOR GLOW
+========================================================== */
+
+#cursor-glow {
+  position: fixed;
+
+  width: 250px;
+
+  height: 250px;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.08),
+    transparent 70%
+  );
+
+  transform: translate(-50%, -50%);
+
+  z-index: 1;
+
+  opacity: 0.6;
+
+  transition: transform 0.08s linear;
+}
+
+/* ==========================================================
+   AUDIO HINT
+========================================================== */
+
+#audio-hint {
+  position: absolute;
+
+  top: 20px;
+
+  right: 20px;
+
+  color: rgba(255, 255, 255, 0.6);
+
+  font-size: 0.85rem;
+
+  letter-spacing: 0.8px;
+
+  user-select: none;
+}
+
+/* ==========================================================
+   SHOOTING STAR
+========================================================== */
+
+.shooting-star {
+  animation: shootingStar 5s linear infinite;
+}
+
+/* ==========================================================
+   BUNNY GLOW
+========================================================== */
+
+#bunny::after {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+
+  bottom: -10px;
+
+  transform: translateX(-50%);
+
+  width: 140px;
+
+  height: 35px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  filter: blur(16px);
+
+  z-index: -1;
+}
+
+/* ==========================================================
+   BUTTON FOCUS
+========================================================== */
+
+.choice-button:focus-visible {
+  outline: 2px solid var(--gold);
+
+  outline-offset: 4px;
+}
+
+/* ==========================================================
+   SELECTION
+========================================================== */
+
+::selection {
+  background: var(--gold);
+
+  color: #222;
+}
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #09111c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #364a63;
+
+  border-radius: 10px;
+}
+
+/* ==========================================================
+   UTILITIES
+========================================================== */
+
+.hidden-opacity {
+  opacity: 0 !important;
+}
+
+.visible {
+  opacity: 1 !important;
+}
+
+.no-pointer {
+  pointer-events: none;
+}
+
+.center {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+}
+
+/* ==========================================================
+   REDUCED MOTION
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+
+    transition: none !important;
+
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================
+   LARGE SCREENS
+========================================================== */
+
+@media (min-width: 1600px) {
+  #bunny {
+    max-width: 340px;
+  }
+
+  #speech-text {
+    font-size: 1.65rem;
+  }
+}
+
+/* ==========================================================
+   SMALL PHONES
+========================================================== */
+
+@media (max-width: 420px) {
+  #speech-text {
+    font-size: 0.95rem;
+  }
+
+  .loader-content p {
+    font-size: 0.9rem;
+  }
+
+  .choice-button {
+    font-size: 0.9rem;
+
+    padding: 14px 20px;
+  }
+}
+
+/* ==========================================================
+   ANIMATIONS
+========================================================== */
+
+@keyframes loaderPulse {
+  0% {
+    transform: scale(1);
+
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.08);
+
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+
+    opacity: 0.9;
+  }
+}
+
+@keyframes shootingStar {
+  0% {
+    transform: translate(0, 0) rotate(-25deg);
+
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-800px, 500px) rotate(-25deg);
+
+    opacity: 0;
+  }
+}
+/* ==========================================================
+   PREMIUM STAR GLOW
+========================================================== */
+
+.star {
+  box-shadow:
+    0 0 4px rgba(255, 255, 255, 0.5),
+    0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.star.large {
+  box-shadow:
+    0 0 10px rgba(255, 255, 255, 0.8),
+    0 0 20px rgba(255, 255, 255, 0.35);
+}
+
+/* ==========================================================
+   NIGHT OVERLAY
+========================================================== */
+
+#app::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    to top,
+
+    rgba(0, 0, 0, 0.15),
+    transparent 40%,
+
+    rgba(255, 255, 255, 0.02)
+  );
+}
+
+/* ==========================================================
+   SOFT NOISE
+========================================================== */
+
+#app::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  opacity: 0.035;
+
+  background-image: radial-gradient(circle, white 1px, transparent 1px);
+
+  background-size: 26px 26px;
+}
+
+/* ==========================================================
+   BUNNY STATES
+========================================================== */
+
+#bunny.sleeping {
+  filter: brightness(0.92) drop-shadow(0 18px 35px rgba(0, 0, 0, 0.28));
+}
+
+#bunny.awake {
+  animation: bunnyBreathing 5s ease-in-out infinite;
+}
+
+#bunny.hopping {
+  animation: bunnyHop 0.7s ease;
+}
+
+#bunny.wave {
+  animation: bunnyWave 1.2s ease;
+}
+
+/* ==========================================================
+   SPEECH POLISH
+========================================================== */
+
+#speech-bubble {
+  backdrop-filter: blur(10px);
+
+  -webkit-backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+#speech-text strong {
+  color: #222;
+
+  font-weight: 700;
+}
+
+#speech-text em {
+  font-style: italic;
+
+  opacity: 0.85;
+}
+
+/* ==========================================================
+   FOOTPRINTS
+========================================================== */
+
+.footprint {
+  position: absolute;
+
+  width: 14px;
+
+  height: 14px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.22);
+
+  filter: blur(2px);
+
+  pointer-events: none;
+
+  animation: footprintFade 4s forwards;
+}
+
+/* ==========================================================
+   HEARTS
+========================================================== */
+
+.heart {
+  position: absolute;
+
+  font-size: 18px;
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  animation: heartFloat 4s ease forwards;
+}
+
+/* ==========================================================
+   SCENE FADE
+========================================================== */
+
+.scene-fade {
+  animation: sceneFade 1.4s ease forwards;
+}
+
+.scene-show {
+  animation: sceneShow 1.4s ease forwards;
+}
+
+/* ==========================================================
+   BUTTON DISABLED
+========================================================== */
+
+.choice-button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+/* ==========================================================
+   LANDSCAPE PHONE
+========================================================== */
+
+@media (max-height: 600px) {
+  #stage {
+    padding-bottom: 40px;
+  }
+
+  #dialogue {
+    top: 20px;
+  }
+
+  #speech-text {
+    font-size: 1rem;
+  }
+}
+
+/* ==========================================================
+   PRINT
+========================================================== */
+
+@media print {
+  body {
+    background: white;
+
+    color: black;
+  }
+
+  #moon,
+  #stars,
+  #choices {
+    display: none;
+  }
+}
+
+/* ==========================================================
+   ACCESSIBILITY
+========================================================== */
+
+:focus-visible {
+  outline: 2px solid var(--gold);
+
+  outline-offset: 4px;
+}
+
+/* ==========================================================
+   FINAL ANIMATIONS
+========================================================== */
+
+@keyframes bunnyHop {
+  0% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-28px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes bunnyWave {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(-3deg);
+  }
+
+  50% {
+    transform: rotate(3deg);
+  }
+
+  75% {
+    transform: rotate(-2deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes footprintFade {
+  0% {
+    opacity: 0;
+
+    transform: scale(0.4);
+  }
+
+  20% {
+    opacity: 0.9;
+
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform: scale(1.8);
+  }
+}
+
+@keyframes heartFloat {
+  0% {
+    opacity: 0;
+
+    transform: translateY(0) scale(0.6);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+
+    transform: translateY(-120px) scale(1.4);
+  }
+}
+
+@keyframes sceneFade {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sceneShow {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/*=========================================================
+STORY OVERLAY
+=========================================================*/
+
+#story-overlay {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: flex-start;
+
+  padding-top: 90px;
+
+  pointer-events: none;
+
+  z-index: 150;
+}
+
+/*====================================================
+STORY CARD
+====================================================*/
+
+#story-box {
+  position: absolute;
+
+  top: 50%;
+
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  width: min(900px, 90vw);
+
+  padding: 20px;
+
+  background: transparent;
+
+  border: none;
+
+  box-shadow: none;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  opacity: 0;
+
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease;
+}
+
+#story-box.show {
+  opacity: 1;
+
+  transform: translate(-50%, -50%) translateY(0);
+}
+
+#story-box.hide {
+  opacity: 0;
+
+  transform: translate(-50%, -50%) translateY(-25px);
+}
+
+#story-text {
+  color: white;
+
+  font-family: "Outfit", sans-serif;
+
+  font-size: clamp(2rem, 3vw, 3.5rem);
+
+  font-weight: 400;
+
+  line-height: 1.45;
+
+  letter-spacing: 1px;
+
+  text-align: center;
+
+  max-width: 850px;
+
+  text-shadow: 0 4px 30px rgba(0, 0, 0, 0.6);
+}
+
+/*=========================================================
+BUNNY STORY STATE
+=========================================================*/
+
+#bunny.story-mode {
+  animation:
+    bunnyBreathing 4s infinite,
+    bunnyGlow 3s ease-in-out infinite;
+}
+
+@keyframes bunnyGlow {
+  0% {
+    filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.3))
+      drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 35px rgba(255, 225, 120, 0.9))
+      drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
+  }
+
+  100% {
+    filter: drop-shadow(0 0 10px rgba(255, 220, 120, 0.3))
+      drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
+  }
+}
+
+/*====================================================
+BUNNY FLOATING
+====================================================*/
+
+#bunny-container {
+  transition:
+    left 5s ease-in-out,
+    top 5s ease-in-out,
+    transform 2s ease;
+}
+
+#bunny-container.floating {
+  position: absolute;
+
+  left: 50%;
+
+  top: 65%;
+
+  transform: translate(-50%, -50%);
+}
+
+/*====================================================
+HOP
+====================================================*/
+
+.bunny-hop {
+  animation: bunnyHopMove 0.9s ease;
+}
+
+@keyframes bunnyHopMove {
+  0% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+
+  35% {
+    transform: translate(-50%, -50%) translateY(-60px);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) translateY(0);
+  }
+}
+
+/*====================================================
+ROTATE
+====================================================*/
+
+.bunny-spin {
+  animation: bunnySpin 1.3s ease;
+}
+
+@keyframes bunnySpin {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+/*====================================================
+SOFT FLOAT
+====================================================*/
+
+.bunny-float {
+  animation: floatAround 8s ease-in-out infinite;
+}
+
+@keyframes floatAround {
+  0% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) translateY(-6px);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) translateY(0px);
+  }
+}
+
+/*====================================================
+PARTICLES
+====================================================*/
+
+.story-particle {
+  position: absolute;
+
+  width: 6px;
+
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  pointer-events: none;
+
+  opacity: 0.8;
+
+  filter: blur(2px);
+
+  animation: particleFloat 3s linear forwards;
+}
+
+@keyframes particleFloat {
+  0% {
+    opacity: 1;
+
+    transform: translateY(0) scale(0.4);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform: translateY(-120px) scale(2);
+  }
+}
+
+/*====================================================
+MOON GLOW
+====================================================*/
+
+#moon.story-moon .moon-glow {
+  animation: moonStory 4s ease-in-out infinite;
+}
+
+@keyframes moonStory {
+  0% {
+    transform: scale(1);
+
+    opacity: 0.25;
+  }
+
+  50% {
+    transform: scale(1.2);
+
+    opacity: 0.55;
+  }
+
+  100% {
+    transform: scale(1);
+
+    opacity: 0.25;
+  }
+}
+
+/*====================================================
+DIM BACKGROUND
+====================================================*/
+
+.story-night {
+  background: radial-gradient(circle at top, #173252, #081019 75%) !important;
+
+  transition: 2s;
+}
+
+/*====================================================
+STAR MAGIC
+====================================================*/
+
+.star.magic {
+  animation: magicStar 2.5s infinite;
+}
+
+@keyframes magicStar {
+  0% {
+    opacity: 0.3;
+
+    transform: scale(0.8);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform: scale(2);
+  }
+
+  100% {
+    opacity: 0.3;
+
+    transform: scale(0.8);
+  }
+}
+
+/*======================================================
+ENDING CARD
+======================================================*/
+
+#ending-card {
+  position: fixed;
+
+  inset: 0;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  background: rgba(5, 10, 18, 0.92);
+
+  backdrop-filter: blur(20px);
+
+  z-index: 500;
+
+  animation: fadeIn 2s;
+}
+
+.ending-content {
+  width: min(700px, 90vw);
+
+  background: white;
+
+  padding: 60px;
+
+  border-radius: 30px;
+
+  text-align: center;
+
+  color: #333;
+
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+}
+
+.ending-content h1 {
+  font-size: 70px;
+
+  margin-bottom: 20px;
+}
+
+.ending-content h2 {
+  font-size: 45px;
+
+  margin-bottom: 25px;
+}
+
+.ending-content p {
+  font-size: 24px;
+
+  line-height: 1.8;
+}
+
+.gift-message {
+  font-size: 20px;
+
+  line-height: 1.9;
+
+  color: #666;
+}
+
+#giftBtn {
+  margin-top: 35px;
+
+  padding: 18px 35px;
+
+  border: none;
+
+  border-radius: 100px;
+
+  font-size: 18px;
+
+  cursor: pointer;
+
+  background: #ffe08a;
+
+  transition: 0.3s;
+}
+
+#giftBtn:hover {
+  transform: translateY(-3px);
+}
+
+.gift-letter {
+  margin-top: 40px;
+
+  font-size: 24px;
+
+  line-height: 2;
+
+  animation: fadeIn 2s;
+}
+
+/*======================================================
+CONFETTI
+======================================================*/
+
+.confetti {
+  position: fixed;
+
+  top: -20px;
+
+  width: 10px;
+
+  height: 10px;
+
+  border-radius: 50%;
+
+  animation: confettiFall 6s linear forwards;
+}
+
+@keyframes confettiFall {
+  to {
+    transform: translateY(120vh) rotate(720deg);
+  }
+}
+
+/*==========================
+Tap Hint
+==========================*/
+
+#tapHint {
+  position: absolute;
+
+  bottom: 55px;
+
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  color: rgba(255, 255, 255, 0.75);
+
+  font-size: 1.05rem;
+
+  letter-spacing: 1px;
+
+  animation: hintPulse 3s ease-in-out infinite;
+
+  user-select: none;
+
+  pointer-events: none;
+}
+
+@keyframes hintPulse {
+  0% {
+    opacity: 0.2;
+
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform: translateX(-50%) translateY(-5px);
+  }
+
+  100% {
+    opacity: 0.2;
+
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ==========================================
+   BUNNY INTRO MOVE
+========================================== */
+
+#bunny-container {
+  transition:
+    left 2.5s ease-in-out,
+    top 2.5s ease-in-out,
+    transform 2.5s ease-in-out;
+}
+
+#bunny-container.move-home {
+  left: 84% !important;
+
+  top: 65% !important;
+
+  transform: translate(-50%, -50%) scale(0.9);
+}
+
+#bunny-container.move-home #bunny {
+  animation: bunnyGlow 5s ease-in-out infinite;
+}
+
+/* ==========================================================
+   END OF FILE
+========================================================== */

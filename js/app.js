@@ -1,5 +1,5 @@
 /* ==========================================================
-   Bunny Lamp Story
+   Lumi Lamp Story
    app.js (Part 1)
    ----------------------------------------------------------
    Main Application Controller
@@ -590,8 +590,6 @@ let writing = false;
 
 bunny.addEventListener("click", () => {
   if (writing) return;
-
-  //   moveBunnyToCorner();
 
   startStory();
 });

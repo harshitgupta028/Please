@@ -1,53 +1,53 @@
 const story = [
-  "Hey... I'm Bunny... ",
+  "👋Hey... I'm Lumi",
 
-  "I'm here to tell you a story",
+  "Before we become companions... There's something I've wanted to tell you",
 
-  "🏡 Every home... has a story.",
+  "🏡 Every home... has a story",
 
-  "🤍 Yours... didn't begin perfectly.",
+  "🤍 Yours... didn't begin perfectly",
 
-  "Couple of months ago... this wasn't a home.",
+  "Couple of months ago... this wasn't a home",
 
-  "It was simply... an unfamiliar apartment 🚪",
+  "It was simply... an unfamiliar apartment🚪",
 
-  "A place filled with mess... questions... and uncertainty.",
+  "A place filled with mess... questions... and uncertainty",
 
   "You weren't even sure... if moving here... was the right decision 💭 ",
 
   "Then... ✨",
 
-  "Everything changed. 🌸",
+  "Everything changed 🌸",
 
-  "🚚 You've made the decision to move.",
+  "🚚 You've made the decision to move",
 
-  "🤝 Making unknown people your roommates... was a leap of faith.",
+  "🤝 Making unknown people your roommates... was a leap of faith",
 
   "The beginning... wasn't the one you imagined. 🌧️",
 
   "Roommates left within a week... 💔",
 
-  "🌙 Some nights... felt much longer... than they should have.",
+  "🌙 Some nights... felt much longer... than they should have",
 
-  "🪨 Some decisions... felt much heavier... than they looked.",
+  "🪨 Some decisions... felt much heavier... than they looked",
 
-  "💛 But through all of it... You never stopped.",
+  "💛 But through all of it... You never stopped",
 
-  "🌱 You stayed calm... You kept moving forward.",
+  "🌱 You stayed calm... You kept moving forward",
 
   "Slowly... 🌼",
 
-  "✨ Things began to fall into place.",
+  "✨ Things began to fall into place",
 
-  "🫂 The right roommate found you.",
+  "🫂 The right roommate found you",
 
-  "🏠 The room... felt a little warmer.",
+  "🏠 The room... felt a little warmer",
 
-  "🛏️ Then came... the search for a bed.",
+  "🛏️ Then came... the search for a bed",
 
   "⏳ It took weeks...",
 
-  "🛌 But eventually... the perfect one found its place.",
+  "🛌 But eventually... the perfect one found its place",
 
   "And little by little... 🌸",
 
@@ -61,13 +61,13 @@ const story = [
 
   "☁️ Comfortable.",
 
-  "It stopped feeling... like a place you rented.",
+  "It stopped feeling... like a place you rented",
 
-  "🏡 And started feeling... like somewhere you belonged.",
+  "🏡 And started feeling... like somewhere you belonged",
 
   "💫 That's the funny thing about homes...",
 
-  "They aren't built... in a single day.",
+  "They aren't built... in a single day",
 
   "They're built from moments like these...🧱",
 
@@ -75,43 +75,43 @@ const story = [
 
   "😴 One peaceful night...",
 
-  "🎉 One little victory... at a time.",
+  "🎉 One little victory... at a time",
 
   "Without even realizing it... 🌠",
 
   "🖼️ You transformed... four unfamiliar walls...",
 
-  "🌍 Into your own little world.",
+  "🌍 Into your own little world",
 
   "...",
 
-  "🐰 And that's where... I come in.",
+  "And that's where... I come in",
 
-  "💛 I've been quietly waiting... for the right moment... to say hello.",
+  "💛 I've been quietly waiting... for the right moment... to say Hello.",
 
   "From today... ✨",
 
   "🤍 I'll be here...",
 
-  "🌙 On the nights that feel a little too long.",
+  "🌙 On the nights that feel a little too long",
 
-  "🌧️ On the days... when everything feels a little too loud.",
+  "🌧️ On the days... when everything feels a little too loud",
 
-  "💡 I'll quietly... light the room.",
+  "💡 I'll quietly... light the room",
 
   "⭐ And whenever... you wonder... if everything will work out...",
 
-  "👀 Just look around.",
+  "👀 Just look around",
 
-  "💪 You've already done... the hardest part.",
+  "💪 You've already done... the hardest part",
 
-  "🏡 This room... is living proof.",
+  "🏡 This room... is living proof",
 
   "💝 So... thank you...",
 
-  "🛏️ For saving... a little space beside your bed... for me.",
+  "🛏️ For saving... a little space beside your bed... for me",
 
-  "🤍 Welcome home.",
+  "🤍 Welcome home",
 
-  "🏡 Not to a flat... but to a place... that finally became yours.",
+  "🏡 Not to a flat... but to a place... that finally became yours",
 ];

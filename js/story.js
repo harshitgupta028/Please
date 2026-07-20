@@ -115,3 +115,18 @@ const story = [
 
   "🏡 Not to a flat... but to a place... that finally became yours",
 ];
+
+// Debug
+// const story = [
+//   "👋Hey... I'm Lumi",
+
+//   "Before we become companions... There's something I've wanted to tell you",
+
+//   "🏡 Every home... has a story",
+
+//   "🤍 Yours... didn't begin perfectly",
+
+//   "🤍 Welcome home... Priya",
+
+//   "🏡 Not to a flat... but to a place... that finally became yours",
+// ];

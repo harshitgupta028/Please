@@ -1373,7 +1373,7 @@ BUNNY STORY STATE
 
 #bunny.story-mode {
   animation:
-    bunnyBreathing 4s infinite,
+    bunnyBreathing 5s infinite,
     bunnyGlow 3s ease-in-out infinite;
 }
 
